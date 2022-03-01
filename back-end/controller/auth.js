@@ -7,12 +7,16 @@ authRouter.post('/login',passport.authenticate('local', {session: false}), async
     try {
         if(req.isAuthenticated()) {
             const user = req.user;
-            const token = jwt.sign({sub: req.user}, process.env.SECRET_KEY, {expiresIn: '86400s'});
+            const token = jwt.sign({sub: req.user.username}, process.env.SECRET_KEY, {expiresIn: '86400s'});
             res.status(200).json({
                 user,
                 token,
                 isAuth: req.isAuthenticated()
             })
+        }
+        else {
+            res.status(401).json({message: "Unauthenticated"});
+
         }
     } catch (error) {
         res.status(400).json({message: error.message});

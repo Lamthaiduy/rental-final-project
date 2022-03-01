@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 const UserSchema = new mongoose.Schema({
     username: String,
     password: String,
-    role: {type: String, enum: [process.env.ADMIN, process.env.USER, process.env.SELLER], default: process.env.USER},
+    role: {type: String, enum: [process.env.ADMIN, process.env.USER, process.env.SELLER]},
     fullname: String,
-   
+    status: {type: String, enum: ['approved', 'rejected', 'pending'], default: 'pending'}
 },  {
     timestamps: true
 })
@@ -18,22 +18,17 @@ UserSchema.pre('save', async function(next) {
     if(!user.isModified('password')) {
         next();
     }
-    user.password = await bcrypt.hash(user.password, process.env.SECRET_KEY);
+    user.password = bcrypt.hashSync(user.password, 10, process.env.SECRET_KEY);
     next();
    } catch (error) {
        console.log(error);
    }
 })
 
-UserSchema.method.verifyPassword = async function(password, next) {
+UserSchema.methods.verifyPassword = function(password, next) {
     try {
-        const verify = await bcrypt.compare(password, this.password);
-        if(verify) {
-            next(null, this);
-        }
-        else {
-            next(null, false);
-        }
+        const verify = bcrypt.compareSync(password, this.password);
+        return verify;
     } catch (error) {
         next(error);
     }

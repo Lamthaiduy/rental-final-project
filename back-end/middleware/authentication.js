@@ -14,7 +14,7 @@ passport.use(
       if (!user) {
         return done(null, false);
       }
-      if (!user.verifyPassword(password)) {
+      if (!user.verifyPassword(password, done)) {
         return done(null, false);
       }
       return done(null, user);
@@ -22,10 +22,11 @@ passport.use(
   })
 );
 
+let opts = {};
 opts.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-opts.secretOrKey = 'secret';
+opts.secretOrKey = process.env.SECRET_KEY;
 passport.use(new JwtStrategy(opts, function(jwt_payload, done) {
-    User.findOne({username: jwt_payload.sub}, function(err, user) {
+    UserModel.findOne({username: jwt_payload.sub}, function(err, user) {
         if (err) {
             return done(err, false);
         }

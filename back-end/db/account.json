@@ -1,0 +1,93 @@
+[
+    {
+        "username": "admin",
+        "password": "abc123@",
+        "role": "ADMIN",
+        "fullname": "Lam Thai Duy",
+        "status": "approved"
+    },
+    {
+        "username": "account1",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 1",
+        "status": "approved"
+    },
+    {
+        "username": "account2",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 2",
+        "status": "approved"
+    },
+    {
+        "username": "account3",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 3",
+        "status": "approved"
+    },
+    {
+        "username": "account4",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 4",
+        "status": "pending"
+    },
+    {
+        "username": "account5",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 5",
+        "status": "pending"
+    },
+    {
+        "username": "account6",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 6",
+        "status": "pending"
+    },
+    {
+        "username": "account7",
+        "password": "abc123@",
+        "role": "USER",
+        "fullname": "ACCOUNT 7",
+        "status": "pending"
+    },
+    {
+        "username": "account9",
+        "password": "abc123@",
+        "role": "SELLER",
+        "fullname": "ACCOUNT 9",
+        "status": "approved"
+    },
+    {
+        "username": "account10",
+        "password": "abc123@",
+        "role": "SELLER",
+        "fullname": "ACCOUNT 10",
+        "status": "approved"
+    },
+    {
+        "username": "account11",
+        "password": "abc123@",
+        "role": "SELLER",
+        "fullname": "ACCOUNT 11",
+        "status": "pending"
+    },
+    {
+        "username": "account12",
+        "password": "abc123@",
+        "role": "SELLER",
+        "fullname": "ACCOUNT 12",
+        "status": "pending"
+    },
+    {
+        "username": "account13",
+        "password": "abc123@",
+        "role": "SELLER",
+        "fullname": "ACCOUNT 13",
+        "status": "pending"
+    }
+]
