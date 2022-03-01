@@ -1,9 +1,14 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import AdminContainer from '../containers/AdminContainer';
 import ApplicationContainer from '../containers/AppContainer';
 import Default from '../pages';
+import Admin from '../pages/admin';
 import Home from '../pages/home';
 import Login from '../pages/login';
 import Register from '../pages/register';
+import AdminProtectedRouter from './AdminRouter'
+import UnauthRouter from './UnauthRouter';
+import AuthRouter from './AuthRouter';
 export default function ApplicationRouter() {
     return (
         <BrowserRouter>
@@ -11,15 +16,20 @@ export default function ApplicationRouter() {
                 <Route path='/' element={<ApplicationContainer>
                     <Default />
                 </ApplicationContainer>} />
-                <Route path='/home' element={<ApplicationContainer>
+                <Route path="/dashboard" element={
+                    <AdminProtectedRouter>
+                        <Admin />
+                    </AdminProtectedRouter>
+                } />
+                <Route path='/home' element={<AuthRouter>
                     <Home />
-                </ApplicationContainer>} />
-                <Route path='/login' element={<ApplicationContainer>
+                </AuthRouter>} />
+                <Route path='/login' element={<UnauthRouter>
                     <Login />
-                </ApplicationContainer>} />
-                <Route path='/register' element={<ApplicationContainer>
+                </UnauthRouter>} />
+                <Route path='/register' element={<UnauthRouter>
                     <Register />
-                </ApplicationContainer>} />
+                </UnauthRouter>} />
             </Routes>
         </BrowserRouter>
     )
