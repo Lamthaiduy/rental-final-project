@@ -11,7 +11,7 @@ userRouter.get('/', async (req, res) => {
     try {
         let usersInRoles, pages, users;
         if(role) {
-            usersInRoles = await UserModel.find();
+            usersInRoles = await UserModel.find({role: role});
             pages = Math.ceil(usersInRoles.length / limit);
             users = await UserModel.find({role: role}).skip((page - 1) * limit).limit(limit);
         }
