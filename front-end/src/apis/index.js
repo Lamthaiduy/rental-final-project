@@ -20,3 +20,9 @@ export async function getAllUserInRole(token, role, page = 1) {
         "Authorization": `Bearer ${token}`
     }})
 }
+
+export async function processUserRegister(token, userId, status) {
+    return await apisBase.post(`/users/process/${userId}`, {status},{headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}

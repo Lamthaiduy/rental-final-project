@@ -29,7 +29,7 @@ userRouter.get('/', async (req, res) => {
     }
 })
 
-userRouter.get('/process/:userId', async (req, res) => {
+userRouter.post('/process/:userId', async (req, res) => {
     try {
         const {userId} = req.params;
         const {status} = req.body;

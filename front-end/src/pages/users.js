@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { getAllUserInRole } from "../apis";
+import { getAllUserInRole, processUserRegister } from "../apis";
 import roles from "../constants/roles";
+import { toast } from "react-toastify";
 
 function Users({ authReducer }) {
   const [pages, setPages] = useState(1);
@@ -28,17 +29,38 @@ function Users({ authReducer }) {
     [currentPage, token]
   );
 
+  async function handleApprove(e, userId) {
+    e.preventDefault();
+    const response = await processUserRegister(token, userId, "approved");
+    if (response.status === 200) {
+      toast.success("Process Done");
+      loadUsers();
+    } else {
+      toast.error(response.data.message);
+    }
+  }
+  async function handleReject(e, userId) {
+    e.preventDefault();
+    const response = await processUserRegister(token, userId, "rejected");
+    if (response.status === 200) {
+      toast.success("Process Done");
+      loadUsers();
+    } else {
+      toast.error(response.data.message);
+    }
+  }
+
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
 
   return (
     <div className="w-full flex justify-center">
-      <section className="bg-white py-20 lg:py-[120px]">
+      <section className="bg-white py-20 lg:pt-[120px]">
         <div className="container">
           <div className="flex flex-wrap -mx-4">
             <div className="w-full px-4">
-              <div className="max-w-full overflow-x-auto">
+              <div className="max-w-full max-h-[600px] overflow-auto">
                 <table className="table-auto w-full">
                   <thead>
                     <tr className="bg-gray-500 text-center">
@@ -202,7 +224,19 @@ function Users({ authReducer }) {
                                border-b border-[#E8E8E8]
                                "
                         >
-                          {user.status}
+                          {user.status === "pending" ? (
+                            <span className="bg-blue-500 text-black rounded-lg py-2 px-3">
+                              {user.status}
+                            </span>
+                          ) : user.status === "rejected" ? (
+                            <span className="bg-red-500 text-black rounded-lg py-2 px-3">
+                              {user.status}
+                            </span>
+                          ) : (
+                            <span className="bg-green-500 text-black rounded-lg py-2 px-3">
+                              {user.status}
+                            </span>
+                          )}
                         </td>
                         <td
                           className="
@@ -217,11 +251,16 @@ function Users({ authReducer }) {
                         >
                           {user.status === "pending" && (
                             <>
-                              {" "}
-                              <button className="bg-green-500 hover:bg-green-700 text-white px-5 py-3 mb-2 rounded-md">
+                              <button
+                                onClick={(e) => handleApprove(e, user._id)}
+                                className="bg-green-500 hover:bg-green-700 text-white px-5 py-3 mb-2 rounded-md"
+                              >
                                 Approve
                               </button>
-                              <button className="bg-red-500 hover:bg-red-700 text-white px-5 py-3 rounded-md">
+                              <button
+                                onClick={(e) => handleReject(e, user._id)}
+                                className="bg-red-500 hover:bg-red-700 text-white px-5 py-3 rounded-md"
+                              >
                                 Reject
                               </button>
                             </>
