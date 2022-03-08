@@ -26,7 +26,7 @@ function Login(props) {
         if(response.status === 200) {
             toast.success("Login Success");
             login(response.data)
-            navigate('/');
+            navigate('/home');
         }
         else {
             toast.error('Login Failed');

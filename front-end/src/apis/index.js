@@ -26,3 +26,8 @@ export async function processUserRegister(token, userId, status) {
         "Authorization": `Bearer ${token}`
     }})
 }
+export async function selectRole(token, role) {
+    return await apisBase.post(`/users/select-role`, {role},{headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}

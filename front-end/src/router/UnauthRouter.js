@@ -5,7 +5,7 @@ import Container from "../containers/AppContainer";
 
 function UnauthorizeRouter({ authReducer, children }) {
   const { isAuth, user } = authReducer;
-  return !isAuth ? <Container>{children}</Container> : (user.role === roles.ADMIN ? <Navigate to="/dashboard" /> : <Navigate to="/" />);
+  return !isAuth ? <Container>{children}</Container> : (user.role === roles.ADMIN ? <Navigate to="/dashboard" /> : <Navigate to="/home" />);
 }
 
 const mapStateToProps = (state) => {

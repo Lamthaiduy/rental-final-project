@@ -3,8 +3,8 @@ const passport = require('passport');
 const authorize = require('../middleware/authorize');
 const UserModel = require('../models/user');
 
-userRouter.use([passport.authenticate('jwt', {session: false}), authorize(process.env.ADMIN)])
-userRouter.get('/', async (req, res) => {
+userRouter.use(passport.authenticate('jwt', {session: false}))
+userRouter.get('/',authorize(process.env.ADMIN), async (req, res) => {
     let {role, page} = req.query;
     const limit = process.env.LIMIT;
     if(!page) page = 1;
@@ -29,7 +29,7 @@ userRouter.get('/', async (req, res) => {
     }
 })
 
-userRouter.post('/process/:userId', async (req, res) => {
+userRouter.post('/process/:userId', authorize(process.env.ADMIN), async (req, res) => {
     try {
         const {userId} = req.params;
         const {status} = req.body;
@@ -37,6 +37,17 @@ userRouter.post('/process/:userId', async (req, res) => {
         res.status(200).json({message: "Action done"});
     } catch (error) {
         res.status(400).json({message: error.message});
+    }
+})
+
+userRouter.post('/select-role', async (req, res) => {
+    const {_id} = req?.user;
+    const {role} = req.body;
+    try {
+        await UserModel.findByIdAndUpdate(_id, {role});
+        res.status(201).json({message: 'Action done'});
+    } catch (error) {
+        res.status(400).json({message: error.message})
     }
 })
 

@@ -4,8 +4,20 @@ import roles from "../constants/roles";
 import Container from "../containers/AppContainer";
 
 function AuthorizeRouter({ authReducer, children }) {
-  const { isAuth } = authReducer;
-  return isAuth ? <Container>{children}</Container> : <Navigate to="/login" />;
+  const { isAuth, user } = authReducer;
+  return isAuth ? (
+    user.role ? (
+      user.status !== "approved" ? (
+        <Navigate to={`/status/${user.status}`} />
+      ) : (
+        <Container>{children}</Container>
+      )
+    ) : (
+      <Navigate to="/select-role" />
+    )
+  ) : (
+    <Navigate to="/login" />
+  );
 }
 
 const mapStateToProps = (state) => {

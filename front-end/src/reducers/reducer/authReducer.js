@@ -1,4 +1,4 @@
-import {LOGIN, LOGOUT} from '../contanst'
+import {LOGIN, LOGOUT, UPDATE} from '../contanst'
 
 const initialState = {
     user: {},
@@ -7,10 +7,12 @@ const initialState = {
 }
 
 export default function authReducer(state = initialState, action) {
+    const payload = action.payload;
     switch(action.type) {
         case LOGIN:
-            const payload = action.payload;
             return {...state, ...payload};
+        case UPDATE:
+            return {...state, user: {...state.user, payload}}
         case LOGOUT:
             return initialState;
         default:
