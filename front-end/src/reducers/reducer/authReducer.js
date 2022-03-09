@@ -12,7 +12,7 @@ export default function authReducer(state = initialState, action) {
         case LOGIN:
             return {...state, ...payload};
         case UPDATE:
-            return {...state, user: {...state.user, payload}}
+            return {...state, user: {...state.user, ...payload}}
         case LOGOUT:
             return initialState;
         default:
