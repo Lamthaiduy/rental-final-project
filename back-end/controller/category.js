@@ -2,6 +2,7 @@ const categoryRouter = require('express').Router();
 const passport = require('passport');
 const authorize = require('../middleware/authorize');
 const CategoryModel = require('../models/categories');
+const PostModel = require('../models/posts');
 
 categoryRouter.use(passport.authenticate('jwt', {session: false}));
 categoryRouter.get('/', async (req, res) => {
@@ -16,7 +17,7 @@ categoryRouter.get('/', async (req, res) => {
 categoryRouter.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const category = await CategoryModel.findById(id).populate('items');
+        const category = await CategoryModel.findById(id).populate('items', "title description",'Posts');
         res.status(200).json({data: category})
     } catch (error) {
         res.status(400).json({message: error.message})
@@ -36,27 +37,29 @@ categoryRouter.post('/', authorize(process.env.ADMIN),async (req, res) => {
     }
 })
 
-categoryRouter.put('/:id', authorize(process.env.ADMIN),async (req, res) => {
+categoryRouter.put('/:id', authorize(process.env.ADMIN), async (req, res) => {
     const name = req.body.name;
-    const id = req.body.id;
+    const id = req.params.id;
     const check = await CategoryModel.findOne({name});
     if(check) {
         res.status(400).json({message: 'Category already Existed'})
     }
     else {
-        await CategoryModel.findByIdAndUpdate(id, {name});
+        await CategoryModel.findByIdAndUpdate(id, {name: name});
         res.status(200).json({mesage: 'Update category success'})
     }
 })
 
 
 categoryRouter.delete('/:id',authorize(process.env.ADMIN), async (req, res) => {
-    const id = req.body.id;
+    const id = req.params.id;
     const check = await CategoryModel.findById(id);
     if(check.items.length > 0) {
         res.status(400).json({message: 'Category already in used'});
     }
     else {
+        await CategoryModel.findByIdAndDelete(id);
+
         res.status(200).json({message: "Category Deleted"})
     }
 

@@ -3,17 +3,18 @@ import { connect } from "react-redux";
 import {
   getAllCategories,
   getOneCategory,
-  createCategory,
-  editCategory,
   deleteCategory,
 } from "../apis";
 import roles from "../constants/roles";
 import { toast } from "react-toastify";
 import CreateCategory from "../components/createNewCategory";
+import EditCategory from "../components/editCategory";
 function Category({ authReducer }) {
   const [categories, setCategories] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
-
+  const [editOpen, setEditOpen] = useState(false);
+const [bodySubmit, setBodySubmit] = useState({});
+const [id, setId] = useState();
   const loadAllCategories = useCallback(
     async function () {
       const { data, status } = await getAllCategories(authReducer.token);
@@ -24,12 +25,37 @@ function Category({ authReducer }) {
     [authReducer.token]
   );
 
+  const loadCate = async (id) => {
+    const {data, status} = await getOneCategory(authReducer.token, id);
+    if(status === 200) {
+        setBodySubmit({name: data.data.name})
+    }
+}
+
+  const handleEditOpen = (e, id) => {
+      setId(id)
+      loadCate(id);
+      setEditOpen(true);
+  }
+
+  const handleDelete = async (e, id) => {
+      const {data, status} = await deleteCategory(authReducer.token, id);
+      if(status === 200) {
+          loadAllCategories();
+          toast.success(data.message)
+      }
+      else {
+          toast.error(data.message)
+      }
+  }
+
   useEffect(() => {
     loadAllCategories();
   }, [loadAllCategories]);
 
   return (
     <>
+    <EditCategory bodySubmit={bodySubmit} setBodySubmit={setBodySubmit} id={id} setId={id} open={editOpen} setOpen={setEditOpen} loadAllCategories={loadAllCategories} token={authReducer.token} />
       <CreateCategory
         open={createOpen}
         setOpen={setCreateOpen}
@@ -141,10 +167,10 @@ function Category({ authReducer }) {
                           border-b border-[#E8E8E8]
                                "
                           >
-                            <button className="bg-green-500 hover:bg-green-700 text-white px-5 py-3 rounded-md">
+                            <button onClick={e => handleEditOpen(e, category._id)} className="bg-green-500 hover:bg-green-700 text-white px-5 py-3 rounded-md">
                               Edit
                             </button>
-                            <button className="bg-red-500 hover:bg-red-700 text-white px-5 py-3 rounded-md">
+                            <button onClick={e => handleDelete(e, category._id)} className="bg-red-500 hover:bg-red-700 text-white px-5 py-3 rounded-md">
                               Delete
                             </button>
                           </td>
