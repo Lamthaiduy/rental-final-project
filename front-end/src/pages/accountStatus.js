@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
 import { updateProfile } from "../reducers/action/authAction";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
-const AccountStatus = ({ authReducer, updateAccount }) => {
+function AccountStatus ({ authReducer, updateAccount }) {
   const { status } = useParams();
 
   console.log(status)

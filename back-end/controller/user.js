@@ -13,12 +13,12 @@ userRouter.get('/',authorize(process.env.ADMIN), async (req, res) => {
         if(role) {
             usersInRoles = await UserModel.find({role: role});
             pages = Math.ceil(usersInRoles.length / limit);
-            users = await UserModel.find({role: role}).skip((page - 1) * limit).limit(limit);
+            users = await UserModel.find({role: role}).sort({createdAt: -1}).skip((page - 1) * limit).limit(limit);
         }
         else {
             usersInRoles = await UserModel.find().where('role').ne(process.env.ADMIN);
             pages = Math.ceil(usersInRoles.length / limit);
-            users = await UserModel.find().where('role').ne(process.env.ADMIN).limit(limit);
+            users = await UserModel.find().where('role').ne(process.env.ADMIN).sort({createdAt: -1}).limit(limit);
         }
         res.status(200).json({
             pages: pages,

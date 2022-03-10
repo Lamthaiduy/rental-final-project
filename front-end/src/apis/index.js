@@ -31,3 +31,29 @@ export async function selectRole(token, role) {
         "Authorization": `Bearer ${token}`
     }})
 }
+
+export async function getAllCategories(token)  {
+    return await apisBase.get('/categories', {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+export async function getOneCategory(token, id)  {
+    return await apisBase.get(`/categories/${id}`, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+export async function createCategory(token, body) {
+    return await apisBase.post('/categories',body, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+export async function editCategory(token,id, body) {
+    return await apisBase.put(`/categories/${id}`,body, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+export async function deleteCategory(token,id) {
+    return await apisBase.delete(`/categories/${id}`, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}

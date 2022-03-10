@@ -6,7 +6,9 @@ const UserSchema = new mongoose.Schema({
     password: String,
     role: {type: String, enum: [process.env.ADMIN, process.env.USER, process.env.SELLER]},
     fullname: String,
-    status: {type: String, enum: ['approved', 'rejected', 'pending'], default: 'pending'}
+    status: {type: String, enum: ['approved', 'rejected', 'pending'], default: 'pending'},
+    contact: String,
+    bankNumber: String
 },  {
     timestamps: true
 })

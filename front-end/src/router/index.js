@@ -12,6 +12,7 @@ import Users from "../pages/users";
 import Sellers from "../pages/sellers";
 import RoleSelection from "../pages/roleSelect";
 import AccountStatus from "../pages/accountStatus";
+import Category from "../pages/category";
 
 export default function ApplicationRouter() {
   return (
@@ -63,6 +64,14 @@ export default function ApplicationRouter() {
             element={
               <AdminProtectedRouter>
                 <Sellers />
+              </AdminProtectedRouter>
+            }
+          />
+           <Route
+            path="/dashboard/categories"
+            element={
+              <AdminProtectedRouter>
+                <Category />
               </AdminProtectedRouter>
             }
           />

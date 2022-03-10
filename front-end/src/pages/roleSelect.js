@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import roles from "../constants/roles";
 import {selectRole} from '../apis'
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { updateProfile } from "../reducers/action/authAction";
-const RoleSelection = ({authReducer, updateAccount}) => {
+function RoleSelection({authReducer, updateAccount}) {
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
 
@@ -14,6 +14,12 @@ const RoleSelection = ({authReducer, updateAccount}) => {
   const setSeller = (e) => {
       setRole(roles.SELLER)
   }
+
+  useEffect(() => {
+    if(authReducer.user.role) {
+      navigate(`/status/${authReducer.user.status}`)
+    }
+  }, [])
 
   const handleSetRole = async(e) => {
     const {data, status} = await selectRole(authReducer.token, role);
