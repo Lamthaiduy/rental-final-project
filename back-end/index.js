@@ -9,6 +9,7 @@ const authRouter = require('./controller/auth');
 const userRouter = require('./controller/user');
 const categoryRouter = require('./controller/category');
 const db = require('./db/db');
+const postRouter = require('./controller/post');
 const app = express();
 const PORT = process.env.PORT | 8080;
 app.use(cors({
@@ -25,8 +26,9 @@ db.connect(process.env.CONNECTION_STRING);
 db.createDataSample();
 
 app.use('/api', authRouter);
-app.use('/api/users/', userRouter);
-app.use('/api/categories/', categoryRouter);
+app.use('/api/users', userRouter);
+app.use('/api/categories', categoryRouter);
+app.use('/api/posts', postRouter);
 
 app.listen(PORT, () => {
     console.log('Running on PORT: ' + PORT);

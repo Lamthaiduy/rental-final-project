@@ -17,7 +17,7 @@ categoryRouter.get('/', async (req, res) => {
 categoryRouter.get('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        const category = await CategoryModel.findById(id).populate('items', "title description",'Posts');
+        const category = await CategoryModel.findById(id);
         res.status(200).json({data: category})
     } catch (error) {
         res.status(400).json({message: error.message})

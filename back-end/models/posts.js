@@ -9,11 +9,11 @@ const PostSchema = new mongoose.Schema({
     price: String,
     petAllow: {type: String, enum: ['Allow', 'Not Allow']},
     peopleAllow: {type: String, enum: ['Male', 'Female', 'Both']},
-    interior: String,
+    interior: {type: String, enum: ['Full Interior', 'No Interior']},
     personLimit: String,
-    isWaitingForEditAllow: Boolean,
+    isWaitingForEditAllow: {type: Boolean, default: false},
     categories: [{type: mongoose.Types.ObjectId, ref: 'Categories'}]
-})
+}, {timestamps: true})
 
 const PostModel = mongoose.model('Posts', PostSchema)
 
