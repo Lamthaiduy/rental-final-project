@@ -13,6 +13,7 @@ import Sellers from "../pages/sellers";
 import RoleSelection from "../pages/roleSelect";
 import AccountStatus from "../pages/accountStatus";
 import Category from "../pages/category";
+import CreatePost from "../pages/createPost";
 
 export default function ApplicationRouter() {
   return (
@@ -80,6 +81,14 @@ export default function ApplicationRouter() {
           element={
             <AuthRouter>
               <Home />
+            </AuthRouter>
+          }
+        />
+        <Route
+          path="/create"
+          element={
+            <AuthRouter>
+              <CreatePost />
             </AuthRouter>
           }
         />

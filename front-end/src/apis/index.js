@@ -57,3 +57,10 @@ export async function deleteCategory(token,id) {
         "Authorization": `Bearer ${token}`
     }})
 }
+
+
+export async function createPost(token, body) {
+    return await apisBase.post(`/posts/`,body, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}

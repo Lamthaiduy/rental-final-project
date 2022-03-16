@@ -64,7 +64,7 @@ postRouter.put('/:id', authorize(process.env.SELLER), async (req, res) => {
     }
 })
 
-postRouter.put('/:id', authorize(process.env.ADMIN), async (req, res) => {
+postRouter.put('/process/:id', authorize(process.env.ADMIN), async (req, res) => {
     const {status} = req.body;
     const {id}= req.params;
     try {

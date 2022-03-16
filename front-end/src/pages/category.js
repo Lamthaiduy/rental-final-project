@@ -5,7 +5,6 @@ import {
   getOneCategory,
   deleteCategory,
 } from "../apis";
-import roles from "../constants/roles";
 import { toast } from "react-toastify";
 import CreateCategory from "../components/createNewCategory";
 import EditCategory from "../components/editCategory";
