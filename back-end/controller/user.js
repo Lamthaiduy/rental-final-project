@@ -51,5 +51,39 @@ userRouter.post('/select-role', async (req, res) => {
     }
 })
 
+userRouter.get('/profile', async (req, res) => {
+    const {_id} = req.user;
+    const user = await UserModel.findById(_id);
+    res.status(200).json({user});
+})
+
+
+userRouter.put('/profile', async (req, res) => {
+    const {_id} = req.user;
+
+    const {...updateProfile} = req.body;
+    await UserModel.findByIdAndUpdate(_id, {...updateProfile});
+    res.status(200).json({message: "Update sucess"});
+})
+
+userRouter.put('/add-vnpay-wallet', async (req, res) => {
+    const {...walletInfo} = body;
+    const {_id} = req.user;
+
+    const userWallets = await UserModel.findById(_id);
+    await UserModel.findByIdAndUpdate(_id, {wallets: [...userWallets.wallets, {...walletInfo}]})
+    res.status(200).json({message: "Add sucess"});
+})
+
+userRouter.put('/remove-vnpay-wallet', async (req, res) => {
+    const {walletNumber}= req.body;
+    const {_id} = req.user;
+
+    const users = await UserModel.findById(_id);
+    const walletList = users.wallets.filter(item => item.walletNumber !== walletNumber);
+    await UserModel.findByIdAndUpdate(_id, {wallets: walletList})
+    res.status(200).json({message: "Remove sucess"});
+
+})
 
 module.exports = userRouter;

@@ -8,7 +8,12 @@ const UserSchema = new mongoose.Schema({
     fullname: String,
     status: {type: String, enum: ['approved', 'rejected', 'pending'], default: 'pending'},
     contact: String,
-    bankNumber: String
+    wallets: [{
+        name: String,
+        walletNumber: String,
+        releaseDate: String,
+        bank: String
+    }]
 },  {
     timestamps: true
 })
