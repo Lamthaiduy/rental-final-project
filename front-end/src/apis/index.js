@@ -15,6 +15,17 @@ export async function register(data) {
     return await apisBase.post('/register', data);
 }
 
+export async function getProfile(token) {
+    return await apisBase.get('/users/profile', {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+export async function updateProfile(token, body) {
+    return await apisBase.put('/users/profile', {...body}, {headers: {
+        "Authorization": `Bearer ${token}`
+    }})
+}
+
 export async function getAllUserInRole(token, role, page = 1) {
     return await apisBase.get(`/users/?role=${role}&page=${page}`, {headers: {
         "Authorization": `Bearer ${token}`

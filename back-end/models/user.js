@@ -13,7 +13,12 @@ const UserSchema = new mongoose.Schema({
         walletNumber: String,
         releaseDate: String,
         bank: String
-    }]
+    }],
+    avatar: String,
+    address: String,
+    gender: String,
+    contact: String,
+    birthday: Date
 },  {
     timestamps: true
 })

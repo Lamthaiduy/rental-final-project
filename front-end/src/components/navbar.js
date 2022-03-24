@@ -1,6 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import {logoutAction} from '../reducers/action/authAction';
+import avatar from "../assets/avatar.png";
+
 
 function Header(props) {
   const { authReducer, logout } = props;
@@ -50,8 +52,9 @@ function Header(props) {
                 >
                   <span className="sr-only">Open user menu</span>
                   <img
+                    onClick={() => navigate('/profile')}
                     className="w-8 h-8 rounded-full"
-                    src="https://www.pngkey.com/png/detail/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png"
+                    src={authReducer?.user?.avatar || avatar}
                     alt="user photo"
                   />
                 </button>

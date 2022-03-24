@@ -3,7 +3,7 @@ import roles from "../constants/roles";
 import { selectRole } from "../apis";
 import { connect } from "react-redux";
 import { useLocation, useParams } from "react-router-dom";
-import { updateProfile } from "../reducers/action/authAction";
+import { updateProfileSuccess } from "../reducers/action/authAction";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 function AccountStatus ({ authReducer, updateAccount }) {
   const { status } = useParams();
@@ -49,7 +49,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updateAccount: (data) => dispatch(updateProfile(data)),
+    updateAccount: (data) => dispatch(updateProfileSuccess(data)),
   };
 };
 

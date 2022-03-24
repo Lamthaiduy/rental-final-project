@@ -3,7 +3,7 @@ import roles from "../constants/roles";
 import {selectRole} from '../apis'
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { updateProfile } from "../reducers/action/authAction";
+import { updateProfileSuccess } from "../reducers/action/authAction";
 function RoleSelection({authReducer, updateAccount}) {
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        updateAccount: (data) => dispatch(updateProfile(data))
+        updateAccount: (data) => dispatch(updateProfileSuccess(data))
     }
 }
   

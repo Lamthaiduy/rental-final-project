@@ -4,7 +4,7 @@ export const loginAction = function (payload) {
     return {type: LOGIN, payload: payload};
 }
 
-export const updateProfile = function(payload) {
+export const updateProfileSuccess = function(payload) {
     return {type: UPDATE, payload}
 }
 

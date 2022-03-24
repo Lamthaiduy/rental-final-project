@@ -14,6 +14,7 @@ import RoleSelection from "../pages/roleSelect";
 import AccountStatus from "../pages/accountStatus";
 import Category from "../pages/category";
 import CreatePost from "../pages/createPost";
+import ProfilePage from "../pages/profile";
 
 export default function ApplicationRouter() {
   return (
@@ -106,6 +107,14 @@ export default function ApplicationRouter() {
             <UnauthRouter>
               <Register />
             </UnauthRouter>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <AuthRouter>
+              <ProfilePage />
+            </AuthRouter>
           }
         />
       </Routes>
