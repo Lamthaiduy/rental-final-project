@@ -8,17 +8,11 @@ const UserSchema = new mongoose.Schema({
     fullname: String,
     status: {type: String, enum: ['approved', 'rejected', 'pending'], default: 'pending'},
     contact: String,
-    wallets: [{
-        name: String,
-        walletNumber: String,
-        releaseDate: String,
-        bank: String
-    }],
     avatar: String,
     address: String,
     gender: String,
     contact: String,
-    birthday: Date
+    birthday: {type: Date, default: new Date(1990, 1, 1)}
 },  {
     timestamps: true
 })
@@ -46,6 +40,6 @@ UserSchema.methods.verifyPassword = function(password, next) {
     }
 }
 
-const UserModel = mongoose.model('users', UserSchema);
+const UserModel = mongoose.model('Users', UserSchema);
 
 module.exports = UserModel;

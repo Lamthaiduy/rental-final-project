@@ -12,7 +12,8 @@ const PostSchema = new mongoose.Schema({
     interior: {type: String, enum: ['Full Interior', 'No Interior']},
     personLimit: String,
     isWaitingForEditAllow: {type: Boolean, default: false},
-    categories: [{type: mongoose.Types.ObjectId, ref: 'Categories'}]
+    categories: [{type: mongoose.Types.ObjectId, ref: 'Categories'}],
+    seller: {type: mongoose.Types.ObjectId, ref: 'Users'}
 }, {timestamps: true})
 
 const PostModel = mongoose.model('Posts', PostSchema)

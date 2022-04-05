@@ -5,20 +5,23 @@ const CategoryModel = require('../models/categories');
 const PostModel = require('../models/posts');
 
 postRouter.use(passport.authenticate('jwt', {session: false}))
-postRouter.get('/', authorize(process.env.USER), async(req, res) => {
-    let {page, category} = req.query;
+postRouter.get('/', authorize([process.env.USER, process.env.SELLER]), async(req, res) => {
+    let {page, categories} = req.query;
+    console.log(categories);
     if(!page) page = 1;
     const limit = process.env.LIMIT;
+    let totalPage;
     try {
         let allPosts;
-        if(!category) {
-            allPosts = await PostModel.find({}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+        if(!categories) {
+            allPosts = await PostModel.find({}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
+            totalPage = Math.ceil((await PostModel.find({})).length / limit);
         }
         else {
-            const categoryInDb = await CategoryModel.findOne({name: category});
-            allPosts = await PostModel.find({categories: categoryInDb._id}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+            allPosts = await PostModel.find({"categories": {$all: categories.split(',')}}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+            totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}})).length / limit);
         }
-        res.status(200).json({data: allPosts});
+        res.status(200).json({data: allPosts, totalPage});
     } catch (error) {
         res.status(400).json({message: error.message});
     }
@@ -36,6 +39,7 @@ postRouter.get("/:id", authorize(), async(req, res) => {
 
 postRouter.post('/', authorize(process.env.SELLER), async (req, res) => {
     const {title} = req.body;
+    const seller = req.user;
     try {
         const checkTitleUsed = await PostModel.findOne({title});
         if(checkTitleUsed) {
@@ -43,7 +47,8 @@ postRouter.post('/', authorize(process.env.SELLER), async (req, res) => {
         }
         else {
             const newPost = new PostModel({
-                ...req.body
+                ...req.body,
+                seller: seller._id
             })
             await newPost.save();
             res.status(201).json({message: "Created post done", data: newPost})

@@ -69,9 +69,39 @@ export async function deleteCategory(token,id) {
     }})
 }
 
+export async function getAllPosts(token, page = 1, categories = []) {
+    return await apisBase.get(`/posts?page=${page}&categories=${categories}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+export async function getDetailPost(token, id) {
+    return await apisBase.get(`/posts/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
 
 export async function createPost(token, body) {
     return await apisBase.post(`/posts/`,body, {headers: {
         "Authorization": `Bearer ${token}`
     }})
+}
+
+export async function updatePost(token, id, body) {
+    return await apisBase.put(`/posts/${id}`,body, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function handleUpdatePostRequest(token, id, status) {
+    return await apisBase.put(`/posts/process/${id}`,{status: status}, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
 }

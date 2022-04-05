@@ -3,11 +3,18 @@ import { connect } from "react-redux";
 import { getProfile, updateProfile } from "../apis";
 import axios from 'axios'
 import avatar from "../assets/avatar.png";
-import uploadHolder from '../assets/upload-holder.png'
 import { updateProfileSuccess } from "../reducers/action/authAction";
-
+import {UploadIcon} from '@heroicons/react/outline';
+import {toast} from 'react-toastify';
 const ProfilePage = ({ authReducer, updateProfileAction }) => {
-  const [profile, setProfile] = useState({});
+  const [profile, setProfile] = useState({
+    fullname: "",
+    gender: "",
+    contact: "",
+    avatar: "",
+    address: "",
+    date: ""
+  });
 
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -17,13 +24,18 @@ const ProfilePage = ({ authReducer, updateProfileAction }) => {
 
   const loadProfile = useCallback(async () => {
     const response = await getProfile(authReducer.token);
-    setProfile(response.data.user);
+    setProfile(prevState => ({...prevState, ...response.data.user}));
   }, [authReducer.token]);
 
   const toggleUploadAvt = () => {
       setFile(null);
       setPreview(null);
       setUpload(prev => !prev);
+  }
+
+  const handleCancelEdit = (e) =>{
+    loadProfile();
+    toggleEdit();
   }
 
   const toggleEdit = () => {
@@ -51,7 +63,44 @@ const ProfilePage = ({ authReducer, updateProfileAction }) => {
             setProfile({...profile, avatar: request.data.url});
         }
         toggleUploadAvt();
+  }
 
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    if(profile.fullname === "") {
+      toast.error("Full name cannot be empty")
+      return;
+    }
+    else if(profile.gender === "") {
+      toast.error("Please select your gender")
+      return;
+    }
+    else if(profile.contact === "") {
+      toast.error("Please fill your email ")
+      return
+    }
+    else if(!profile.contact.toLowerCase().match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    )) {
+      toast.error("Please provide valid email ")
+      return
+    }
+    else if(!profile.birthday) {
+      toast.error("Please select your birthday")
+      return
+    }
+    else {
+      const {status} = await updateProfile(authReducer.token, {...profile});
+      if(status === 200) {
+          updateProfileAction({...profile});
+          setEdit(false)
+          toast.success("update success");
+      }
+    }
+  }
+
+  const handleChange = (e) => {
+    setProfile({...profile, [e.target.name]: e.target.value})
   }
 
   useEffect(() => {
@@ -59,7 +108,7 @@ const ProfilePage = ({ authReducer, updateProfileAction }) => {
   }, [loadProfile]);
 
   return (
-    <div className="container mx-auto my-5 p-5">
+    <div className="container mx-auto my-10 p-5">
       <div className="md:flex no-wrap md:-mx-2 ">
         <div className="w-full md:w-3/12 md:mx-2">
           <div className="bg-white p-3 border-t-4 border-gray-400">
@@ -76,10 +125,8 @@ const ProfilePage = ({ authReducer, updateProfileAction }) => {
             /> : 
             <>
                 <label htmlFor="upload">
-                    <img
+                    <UploadIcon
                     className="h-[300px] w-full mx-auto border-gray-400"
-                    src={uploadHolder}
-                    alt=""
                 />
                 <input type="file" id="upload" name="file" onChange={handleUpload} className="hidden" />
                 </label>
@@ -135,86 +182,40 @@ const ProfilePage = ({ authReducer, updateProfileAction }) => {
               <span className="tracking-wide">About</span>
             </div>
             <div className="text-gray-700">
-              <div className="grid md:grid-cols-2 text-sm">
+              <div className="grid md:grid-cols-2 text-sm gap-2">
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Full Name</div>
-                  <div className="px-4 py-2">{profile.fullname}</div>
+                  <input onChange={handleChange} type="text" className="px-4 py-2 border rounded-md outline-none" name="fullname" value={profile?.fullname}  disabled={!edit}/>
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Gender</div>
-                  <div className="px-4 py-2">
-                    {profile?.gender || "Not Yet"}
-                  </div>
+                  <select onChange={handleChange} className="px-4 py-2 border rounded-md outline-none" name="gender" value={profile?.gender || "Please Choose One"}  disabled={!edit}>
+                    <option value="Please Choose One" disabled>Please Choose One</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="px-4 py-2 font-semibold">Contact No.</div>
-                  <div className="px-4 py-2">
-                    {profile?.contact || "Not Yet"}
-                  </div>
+                  <div className="px-4 py-2 font-semibold">Contact Email</div>
+                  <input onChange={handleChange} type="email" className="px-4 py-2 border rounded-md outline-none" name="contact" value={profile?.contact}  disabled={!edit}/>
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Address</div>
-                  <div className="px-4 py-2">
-                    {profile?.address || "Not Yet"}
-                  </div>
+                  <input onChange={handleChange} type="text" className="px-4 py-2 border rounded-md outline-none" name="address" value={profile?.address}  disabled={!edit}/>
                 </div>
                 <div className="grid grid-cols-2">
                   <div className="px-4 py-2 font-semibold">Birthday</div>
-                  <div className="px-4 py-2">
-                    {profile?.birthday || "Not Yet"}
-                  </div>
+                  <input onChange={handleChange} type="date" className="px-4 py-2 border rounded-md outline-none" name="birthday" value={profile?.birthday?.slice(0, 10) || "1900-01-01"}  disabled={!edit}/>
                 </div>
               </div>
             </div>
-            <button className="block w-full text-blue-800 text-sm font-semibold rounded-lg hover:bg-gray-100 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4">
+            {edit ? <div className="w-full flex justify-around my-4">
+              <button onClick={handleUpdateProfile} className="py-2 px-3 rounded-md bg-green-500 text-white">Save</button>
+              <button onClick={handleCancelEdit} className="py-2 px-3 rounded-md bg-red-500 text-white">Cancel</button>
+            </div> : <button onClick={toggleEdit} className="inline-block mx-auto w-full bg-blue-800 text-white text-sm font-semibold rounded-lg hover:bg-blue-900 focus:outline-none focus:shadow-outline focus:bg-gray-100 hover:shadow-xs p-3 my-4">
               Edit
-            </button>
-          </div>
-
-          <div className="my-4"></div>
-
-          <div className="bg-white p-3 shadow-sm rounded-sm">
-            <div className="grid grid-cols-2">
-              <div>
-                <div className="flex items-center space-x-2 font-semibold text-gray-900 leading-8 mb-3">
-                  <span clas="text-green-500">
-                    <svg
-                      className="h-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path fill="#fff" d="M12 14l9-5-9-5-9 5 9 5z" />
-                      <path
-                        fill="#fff"
-                        d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222"
-                      />
-                    </svg>
-                  </span>
-                  <span className="tracking-wide">Bank Connected</span>
-                </div>
-                <ul className="list-inside space-y-2">
-                  {profile?.wallets?.map((item, index) => (
-                    <li key={index}>
-                      <div className="text-teal-600">
-                        Masters Degree in Oxford
-                      </div>
-                      <div className="text-gray-500 text-xs">
-                        March 2020 - Now
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
+            </button>}
+          </div>          
         </div>
       </div>
     </div>
