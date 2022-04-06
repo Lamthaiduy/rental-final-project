@@ -1,5 +1,5 @@
 import {NavLink, useNavigate} from 'react-router-dom'
-import {ChartPieIcon, UserGroupIcon, LogoutIcon, BookmarkAltIcon} from '@heroicons/react/solid'
+import {ChartPieIcon, UserGroupIcon, LogoutIcon, BookmarkAltIcon, PencilAltIcon, CreditCardIcon, CashIcon} from '@heroicons/react/solid'
 import {logoutAction} from '../reducers/action/authAction';
 import { connect } from 'react-redux';
 
@@ -50,6 +50,33 @@ function SideBar(props) {
               >
                 <BookmarkAltIcon className='w-10 h-10 text-gray-600' />
                 <span className="ml-3">Categories</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/dashboard/waiting"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <PencilAltIcon className='w-10 h-10 text-gray-600' />
+                <span className="ml-3">Waiting Posts</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/dashboard/refund"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <CreditCardIcon className='w-10 h-10 text-gray-600' />
+                <span className="ml-3">Refund Requests</span>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/dashboard/payment"
+                className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                <CashIcon className='w-10 h-10 text-gray-600' />
+                <span className="ml-3">Payment Requests</span>
               </NavLink>
             </li>
             <li>

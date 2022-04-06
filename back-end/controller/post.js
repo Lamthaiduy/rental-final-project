@@ -16,21 +16,21 @@ postRouter.get('/', authorize([process.env.USER, process.env.SELLER]), async(req
         let allPosts;
         if(!categories) {
             if(!search || search === "") {
-                allPosts = await PostModel.find({isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
+                allPosts = await PostModel.find({isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name').populate('seller');
             totalPage = Math.ceil((await PostModel.find({isWaitingForEditAllow: false})).length / limit);
             }
             else {
-                allPosts = await PostModel.find({address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
+                allPosts = await PostModel.find({address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name').populate('seller');
             totalPage = Math.ceil((await PostModel.find({address: new RegExp(search, 'i'), isWaitingForEditAllow: false})).length / limit);
             }
         }
         else {
             if(!search || search === "") {
-                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, isWaitingForEditAllow: flase}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, isWaitingForEditAllow: flase}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories").populate('seller');
             totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}, isWaitingForEditAllow: false})).length / limit);
             }
             else {
-                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories").populate('seller');
             totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i'), isWaitingForEditAllow: false})).length / limit);
             }
         }
@@ -40,6 +40,19 @@ postRouter.get('/', authorize([process.env.USER, process.env.SELLER]), async(req
     }
 })
 
+postRouter.get("/waiting/list", authorize(process.env.ADMIN), async (req, res) => {
+    let {page} = req.query;
+    if(!page) page = 1;
+    const limit = process.env.LIMIT;
+    let totalPage;
+    try {
+        const allPostsOfSeller = await PostModel.find({isWaitingForEditAllow: true}).populate('categories', 'name').populate('seller').skip(limit * (page -1)).limit(limit);
+        totalPage = Math.ceil((await PostModel.find({isWaitingForEditAllow: true})).length / limit)
+        res.status(200).json({data: allPostsOfSeller, totalPage})
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
 postRouter.get("/owner/list", authorize(process.env.SELLER), async (req, res) => {
     const seller = req.user;
     let {page} = req.query;
@@ -54,6 +67,7 @@ postRouter.get("/owner/list", authorize(process.env.SELLER), async (req, res) =>
         res.status(400).json({message: error.message})
     }
 })
+
 
 postRouter.get("/:id", authorize(), async(req, res) => {
     const {id} = req.params;
@@ -91,6 +105,16 @@ postRouter.put('/:id', authorize(process.env.SELLER), async (req, res) => {
     try {
         const updateDocument = req.body;
     await PostModel.findByIdAndUpdate(id, {...updateDocument, isWaitingForEditAllow: true});
+    res.status(202).json({message: "Post updated"})
+    } catch (error) {
+        res.status(400).json({message: error.message});
+    }
+})
+
+postRouter.put('rented/:id', authorize(process.env.SELLER), async (req, res) => {
+    const {id} = req.params;
+    try {
+    await PostModel.findByIdAndUpdate(id, {status: 'Rented'});
     res.status(202).json({message: "Post updated"})
     } catch (error) {
         res.status(400).json({message: error.message});

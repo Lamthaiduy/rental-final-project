@@ -1,24 +1,24 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getAllOwnPosts } from "../apis";
+import {getAllWaitingPosts, handleUpdatePostRequest } from "../apis";
 
-function OwnerList({ authReducer }) {
+function WaitingPost({ authReducer }) {
   const { token } = authReducer;
   const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [listItems, setListItems] = useState([]);
-  const navigate = useNavigate();
-
-  const handleEditPost = (id) => {
-    navigate(`/edit/${id}`);
-  };
 
   const loadSelfItems = useCallback(async () => {
-    const { data } = await getAllOwnPosts(token, currentPage);
+    const { data } = await getAllWaitingPosts(token, currentPage);
     setListItems(data.data);
     setTotalPage(data.totalPage);
   }, [token, currentPage]);
+
+  const handleProcess = async (id, status) => {
+    await handleUpdatePostRequest(token, id, status)
+    loadSelfItems();
+  }
 
   useEffect(() => {
     loadSelfItems();
@@ -140,38 +140,6 @@ function OwnerList({ authReducer }) {
                              border-r border-transparent
                              "
                       >
-                        Rent Status
-                      </th>
-                      <th
-                        className="
-                             w-1/6
-                             min-w-[160px]
-                             text-lg
-                             font-semibold
-                             text-white
-                             py-4
-                             lg:py-7
-                             px-3
-                             lg:px-4
-                             border-r border-transparent
-                             "
-                      >
-                        Edit Status
-                      </th>
-                      <th
-                        className="
-                             w-1/6
-                             min-w-[160px]
-                             text-lg
-                             font-semibold
-                             text-white
-                             py-4
-                             lg:py-7
-                             px-3
-                             lg:px-4
-                             border-r border-transparent
-                             "
-                      >
                         Action
                       </th>
                     </tr>
@@ -266,69 +234,24 @@ function OwnerList({ authReducer }) {
                              py-5
                              px-2
                              bg-white
-                             border-b border-[#E8E8E8]
-                             "
-                          >
-                            <span
-                              className={`${
-                                item.status === "Rented"
-                                  ? "bg-red-500"
-                                  : item.status === "Deposited"
-                                  ? "bg-yellow-500"
-                                  : "bg-green-500"
-                              } text-white font-medium py-1 px-3 rounded-md`}
-                            >
-                              {item.status}
-                            </span>
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-[#F3F6FF]
-                             border-b border-[#E8E8E8]
-                             "
-                          >
-                            {item.isWaitingForEditAllow ? (
-                              <span className="bg-gray-500 block text-white px-3 py-1 rounded-md">
-                                Waiting For Review
-                              </span>
-                            ) : (
-                              <span className="bg-green-500 text-white px-3 py-1 rounded-md">
-                                Available
-                              </span>
-                            )}
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-white
                              border-b border-r border-[#E8E8E8]
-                             flex
-                             justify-center
-                             gap-2
                              "
                           >
                             <button
-                              onClick={() => handleEditPost(item._id)}
-                              className={`bg-blue-500 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-3 py-1 rounded-md`}
-                              disabled={item.isWaitingForEditAllow}
+                              onClick={() =>
+                                handleProcess(item._id, "approved")
+                              }
+                              className={`bg-green-500 mb-2 text-white px-3 py-1 rounded-md`}
                             >
-                              Edit
+                              Approved
                             </button>
                             <button
-                              onClick={() => handleEditPost(item._id)}
-                              className="bg-green-500 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-3 py-1 rounded-md"
-                              disabled={item.status !== 'Deposited'}
+                              onClick={() =>
+                                handleProcess(item._id, "denied")
+                              }
+                              className="bg-red-500 text-white px-3 py-1 rounded-md"
                             >
-                              Mark as Rented
+                              Delete
                             </button>
                           </td>
                         </tr>
@@ -361,4 +284,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(OwnerList);
+export default connect(mapStateToProps)(WaitingPost);

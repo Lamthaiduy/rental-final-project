@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getAllPosts, getAllCategories } from "../apis/";
 
 function Home({ authReducer }) {
@@ -17,22 +18,23 @@ function Home({ authReducer }) {
     setCategories(data.data);
   }, [token]);
 
+  const navigate = useNavigate();
+
   const handleCheckedFilter = (e) => {
     setCurrentPage(1);
-    if(filter.includes(e.target.value)) {
-      const newState = filter.filter(item => item !== e.target.value)
-      setFilter(newState)
+    if (filter.includes(e.target.value)) {
+      const newState = filter.filter((item) => item !== e.target.value);
+      setFilter(newState);
+    } else {
+      setFilter((prevState) => [...prevState, e.target.value]);
     }
-    else {
-      setFilter(prevState => [...prevState, e.target.value])
-    }
-  }
+  };
 
   const handleSearch = async () => {
     const { data } = await getAllPosts(token, currentPage, filter, search);
     setPosts(data.data);
     setTotalPage(data.totalPage);
-  }
+  };
 
   const loadPost = useCallback(async () => {
     const { data } = await getAllPosts(token, currentPage, filter, search);
@@ -132,11 +134,23 @@ function Home({ authReducer }) {
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative z-10 flex items-baseline justify-between pt-24 pb-6 border-b border-gray-200">
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
-              All Home 
+              All Home
             </h1>
             <div className="flex gap-2">
-            <input type="text" name="search" onChange={(e) => setSearch(e.target.value)} value={search} placeholder='Search by Address' className='outline-none border px-2 py-1 border-gray-400 rounded-sm' />
-            <button onClick={handleSearch} className="px-3 py-1 rounded-sm bg-blue-500 text-white">Search</button>
+              <input
+                type="text"
+                name="search"
+                onChange={(e) => setSearch(e.target.value)}
+                value={search}
+                placeholder="Search by Address"
+                className="outline-none border px-2 py-1 border-gray-400 rounded-sm"
+              />
+              <button
+                onClick={handleSearch}
+                className="px-3 py-1 rounded-sm bg-blue-500 text-white"
+              >
+                Search
+              </button>
             </div>
           </div>
 
@@ -168,14 +182,14 @@ function Home({ authReducer }) {
                       <div key={index} className="pt-6" id="filter-section-0">
                         <div className="space-y-4">
                           <div className="flex items-center">
-                          <input
-                            id="filter-color-0"
-                            name="categories"
-                            type="checkbox"
-                            value={category._id}
-                            onChange={handleCheckedFilter}
-                            className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                          />
+                            <input
+                              id="filter-color-0"
+                              name="categories"
+                              type="checkbox"
+                              value={category._id}
+                              onChange={handleCheckedFilter}
+                              className="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                            />
                             <label
                               htmlFor="filter-color-0"
                               className="ml-3 text-sm text-gray-600"
@@ -191,33 +205,100 @@ function Home({ authReducer }) {
 
               <div className="lg:col-span-3">
                 <div className="flex w-full justify-center gap-2 my-3">
-                  {[...Array(totalPage).keys()].map(number => <span key={number + 1} className="font-medium px-2 py-1 border rounded-sm cursor-pointer" onClick={() => setCurrentPage(number + 1)}>{number + 1}</span>)}
+                  {[...Array(totalPage).keys()].map((number) => (
+                    <span
+                      key={number + 1}
+                      className="font-medium px-2 py-1 border rounded-sm cursor-pointer"
+                      onClick={() => setCurrentPage(number + 1)}
+                    >
+                      {number + 1}
+                    </span>
+                  ))}
                 </div>
-              <div className="w-full h-[700px] overflow-auto p-10 border-2">
-                {posts.map((item) => (
-                  <div className="bg-gray-200 p-10 rounded-md relative mb-4" key={item._id}>
-                    <h5 className="font-bold my-2 text-2xl">{item.title}</h5>
-                    <p className='w-full truncate my-2'><span className="font-medium">Short Description:</span> {item.description}</p>
-                    <span className="font-medium">Categories:</span>
-                    <div className="my-2 flex gap-3">
-                      {item.categories.map((item) => (
-                        <span className="rounded-md border bg-violet-500 text-white font-medium py-1 px-3" key={item._id}>{item.name}</span>
-                      ))}
+                <div className="w-full h-[700px] overflow-auto p-10">
+                  {posts.map((item) => (
+                    <div
+                      className="bg-gray-200 p-10 rounded-md relative mb-4"
+                      key={item._id}
+                    >
+                      <h5 className="font-bold my-2 text-2xl">{item.title}</h5>
+                      <p className="w-full my-2">
+                        <span className="font-medium">Short Description:</span>{" "}
+                        {item.description}
+                      </p>
+                      <span className="font-medium">Categories:</span>
+                      <div className="my-2 flex gap-3">
+                        {item.categories.map((item) => (
+                          <span
+                            className="rounded-md border bg-violet-500 text-white font-medium py-1 px-3"
+                            key={item._id}
+                          >
+                            {item.name}
+                          </span>
+                        ))}
+                      </div>
+                      <span>
+                        <span className="font-medium">Price:</span>{" "}
+                        {parseInt(item.price).toLocaleString("en-US")} VND
+                      </span>
+                      <div>
+                        <span className="font-medium">Address:</span>{" "}
+                        {item.address}
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">Status:</span>{" "}
+                        <span
+                          className={`${
+                            item.status === "Rented"
+                              ? "bg-red-500"
+                              : item.status === "Deposited"
+                              ? "bg-yellow-500"
+                              : "bg-green-500"
+                          } text-white font-medium py-1 px-3 rounded-md`}
+                        >
+                          {item.status}
+                        </span>
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">Pet Allow:</span>{" "}
+                        <span>{item.petAllow}</span>
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">People Allow:</span>{" "}
+                        <span>{item.peopleAllow}</span>
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">Interior Status:</span>{" "}
+                        <span>{item.interior}</span>
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">Person Limit:</span>{" "}
+                        <span>{item.personLimit}</span>
+                      </div>
+                      <div className="my-2">
+                        <span className="font-medium">Posted By:</span>{" "}
+                        <span>{item.seller.fullname}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 my-2">
+                        {item.imageLink.map((image, index) => (
+                          <img
+                            className="w-auto h-auto"
+                            key={index}
+                            alt={index}
+                            src={image}
+                          />
+                        ))}
+                      </div>
+                      {item.status === "Unrented" && (
+                        <button onClick={() => navigate(`/deposit/${item._id}`)} className="my-2 font-medium bg-blue-400 rounded-sm px-3 py-1 text-white absolute right-2 bottom-0">
+                          Rent This
+                        </button>
+                      )}
                     </div>
-                    <span><span className="font-medium">Price:</span> {parseInt(item.price).toLocaleString('en-US')}</span>
-                    <div><span className="font-medium">Address:</span> {item.address}</div>
-                    <div className="my-2"><span className="font-medium">Status:</span> <span className={`${item.status === 'Rented' ? 'bg-red-500' : item.status === 'Deposited' ? 'bg-yellow-500' : 'bg-green-500'} text-white font-medium py-1 px-3 rounded-md`}>{item.status}</span></div>
-                    <div className="grid grid-cols-2 gap-2 my-2">
-                      {item.imageLink.map((image, index) => (
-                        <img className="w-auto h-auto" key={index} alt={index} src={image} />
-                      ))}
-                    </div>
-                    <button className="my-2 font-medium bg-blue-400 rounded-sm px-3 py-1 text-white absolute right-2 bottom-0">More Detail</button>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
             </div>
-              </div>
           </section>
         </main>
       </div>

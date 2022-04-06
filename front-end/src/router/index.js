@@ -17,8 +17,15 @@ import CreatePost from "../pages/createPost";
 import ProfilePage from "../pages/profile";
 import OwnerList from "../pages/ownerList";
 import EditPost from "../pages/editPost";
+import WaitingPost from "../pages/waitingPost";
+import { connect } from "react-redux";
+import roles from "../constants/roles";
+import NotFound from "../pages/404";
+import DepositForm from "../pages/depositForm";
+import Success from "../pages/sucess";
 
-export default function ApplicationRouter() {
+function ApplicationRouter({authReducer}) {
+  const {user} = authReducer;
   return (
     <BrowserRouter>
       <Routes>
@@ -46,15 +53,15 @@ export default function ApplicationRouter() {
             </ApplicationContainer>
           }
         />
-        <Route
+        {user.role === roles.ADMIN && <>
+          <Route
           path="/dashboard"
           element={
             <AdminProtectedRouter>
               <Admin />
             </AdminProtectedRouter>
           }
-        >
-        </Route>
+        />
         <Route
             path="/dashboard/users"
             element={
@@ -79,7 +86,17 @@ export default function ApplicationRouter() {
               </AdminProtectedRouter>
             }
           />
-        <Route
+           <Route
+            path="/dashboard/waiting"
+            element={
+              <AdminProtectedRouter>
+                <WaitingPost />
+              </AdminProtectedRouter>
+            }
+          />
+        </>}
+        {user.role === roles.USER && <>
+          <Route
           path="/home"
           element={
             <AuthRouter>
@@ -87,14 +104,23 @@ export default function ApplicationRouter() {
             </AuthRouter>
           }
         />
-        <Route
-          path="/create"
+          <Route
+          path="/deposit/:postId"
           element={
             <AuthRouter>
-              <CreatePost />
+              <DepositForm />
             </AuthRouter>
           }
         />
+          <Route
+          path="/success"
+          element={
+            <AuthRouter>
+              <Success />
+            </AuthRouter>
+          }
+        />
+        </>}
         <Route
           path="/login"
           element={
@@ -119,8 +145,17 @@ export default function ApplicationRouter() {
             </AuthRouter>
           }
         />
+        {user.role === roles.SELLER && <>
+          <Route
+          path="/create"
+          element={
+            <AuthRouter>
+              <CreatePost />
+            </AuthRouter>
+          }
+        />
         <Route
-          path="/list"
+          path="/home"
           element={
             <AuthRouter>
               <OwnerList />
@@ -134,8 +169,17 @@ export default function ApplicationRouter() {
               <EditPost />
             </AuthRouter>
           }
-        />
+        /></>}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
 }
+
+const mapStateToProps = (state) => {
+  return {
+    authReducer: state.authReducer
+  }
+}
+
+export default connect(mapStateToProps)(ApplicationRouter) 

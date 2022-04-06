@@ -1,21 +1,21 @@
 import { Link, useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
-import {logoutAction} from '../reducers/action/authAction';
+import { logoutAction } from "../reducers/action/authAction";
 import avatar from "../assets/avatar.png";
-
+import roles from "../constants/roles";
 
 function Header(props) {
   const { authReducer, logout } = props;
   const navigate = useNavigate();
   function handleLogout(e) {
-      e.preventDefault();
-      logout();
-      navigate('/login');
+    e.preventDefault();
+    logout();
+    navigate("/login");
   }
   return (
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
-        <Link to="#" className="flex">
+        <Link to="/" className="flex">
           <svg
             className="mr-3 h-10"
             viewBox="0 0 52 72"
@@ -52,7 +52,7 @@ function Header(props) {
                 >
                   <span className="sr-only">Open user menu</span>
                   <img
-                    onClick={() => navigate('/profile')}
+                    onClick={() => navigate("/profile")}
                     className="w-8 h-8 rounded-full"
                     src={authReducer?.user?.avatar || avatar}
                     alt="user photo"
@@ -124,31 +124,40 @@ function Header(props) {
           id="mobile-menu-4"
         >
           <ul className="flex flex-col mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium">
-            <li>
-              <Link
-                to="/home"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-                aria-current="page"
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/create"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Create Post
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/list"
-                className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Manager Own Posts
-              </Link>
-            </li>
+            {authReducer.user.role === roles.USER && (
+              <>
+                <li>
+                  <Link
+                    to="/home"
+                    className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                    aria-current="page"
+                  >
+                    Home
+                  </Link>
+                </li>
+              </>
+            )}
+            {authReducer.user.role === roles.SELLER && (
+              <>
+              <li>
+                  <Link
+                    to="/home"
+                    className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Manager Own Posts
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/create"
+                    className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
+                  >
+                    Create Post
+                  </Link>
+                </li>
+                
+              </>
+            )}
           </ul>
         </div>
       </div>
@@ -162,11 +171,11 @@ const mapStateToProps = function (state) {
 };
 
 const mapDispatchToProps = function (dispatch) {
-    return {
-        logout: function() {
-            return dispatch(logoutAction());
-        }
-    }
-}
+  return {
+    logout: function () {
+      return dispatch(logoutAction());
+    },
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

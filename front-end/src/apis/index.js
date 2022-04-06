@@ -84,6 +84,13 @@ export async function getAllOwnPosts(token, page = 1) {
         }
     })
 }
+export async function getAllWaitingPosts(token, page = 1) {
+    return await apisBase.get(`/posts/waiting/list?page=${page}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
 
 export async function getDetailPost(token, id) {
     return await apisBase.get(`/posts/${id}`, {
@@ -109,6 +116,13 @@ export async function updatePost(token, id, body) {
 
 export async function handleUpdatePostRequest(token, id, status) {
     return await apisBase.put(`/posts/process/${id}`,{status: status}, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+export async function handlePayment(token, body) {
+    return await apisBase.post(`/deposits/create-url/`,body, {
         headers: {
             "Authorization": `Bearer ${token}`
         }

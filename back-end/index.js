@@ -10,6 +10,7 @@ const userRouter = require('./controller/user');
 const categoryRouter = require('./controller/category');
 const db = require('./db/db');
 const postRouter = require('./controller/post');
+const depositRouter = require('./controller/deposits');
 const app = express();
 const PORT = process.env.PORT | 8080;
 app.use(cors({
@@ -29,6 +30,7 @@ app.use('/api', authRouter);
 app.use('/api/users', userRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/posts', postRouter);
+app.use('/api/deposits', depositRouter);
 
 app.listen(PORT, () => {
     console.log('Running on PORT: ' + PORT);
