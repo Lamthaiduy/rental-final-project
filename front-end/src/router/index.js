@@ -15,6 +15,7 @@ import AccountStatus from "../pages/accountStatus";
 import Category from "../pages/category";
 import CreatePost from "../pages/createPost";
 import ProfilePage from "../pages/profile";
+import OwnerList from "../pages/ownerList";
 
 export default function ApplicationRouter() {
   return (
@@ -114,6 +115,14 @@ export default function ApplicationRouter() {
           element={
             <AuthRouter>
               <ProfilePage />
+            </AuthRouter>
+          }
+        />
+        <Route
+          path="/list"
+          element={
+            <AuthRouter>
+              <OwnerList />
             </AuthRouter>
           }
         />

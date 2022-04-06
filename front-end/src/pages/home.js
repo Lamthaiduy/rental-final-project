@@ -8,6 +8,7 @@ function Home({ authReducer }) {
   const [totalPage, setTotalPage] = useState(0);
   const [filter, setFilter] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
 
   const { token } = authReducer;
 
@@ -27,11 +28,17 @@ function Home({ authReducer }) {
     }
   }
 
-  const loadPost = useCallback(async () => {
-    const { data } = await getAllPosts(token, currentPage, filter);
+  const handleSearch = async () => {
+    const { data } = await getAllPosts(token, currentPage, filter, search);
     setPosts(data.data);
     setTotalPage(data.totalPage);
-  }, [filter.length, token, currentPage]);
+  }
+
+  const loadPost = useCallback(async () => {
+    const { data } = await getAllPosts(token, currentPage, filter, search);
+    setPosts(data.data);
+    setTotalPage(data.totalPage);
+  }, [token, currentPage, filter]);
 
   useEffect(() => {
     loadCategories();
@@ -127,7 +134,10 @@ function Home({ authReducer }) {
             <h1 className="text-4xl font-extrabold tracking-tight text-gray-900">
               All Home 
             </h1>
-            <input type="text" name="search" placeholder='Search by Address' className='outline-none border px-2 py-1 border-gray-400 rounded-sm' />
+            <div className="flex gap-2">
+            <input type="text" name="search" onChange={(e) => setSearch(e.target.value)} value={search} placeholder='Search by Address' className='outline-none border px-2 py-1 border-gray-400 rounded-sm' />
+            <button onClick={handleSearch} className="px-3 py-1 rounded-sm bg-blue-500 text-white">Search</button>
+            </div>
           </div>
 
           <section aria-labelledby="products-heading" className="pt-6 pb-24">
@@ -195,6 +205,7 @@ function Home({ authReducer }) {
                       ))}
                     </div>
                     <span><span className="font-medium">Price:</span> {parseInt(item.price).toLocaleString('en-US')}</span>
+                    <div><span className="font-medium">Address:</span> {item.address}</div>
                     <div className="grid grid-cols-2 gap-2 my-2">
                       {item.imageLink.map((image, index) => (
                         <img className="w-auto h-auto" key={index} alt={index} src={image} />

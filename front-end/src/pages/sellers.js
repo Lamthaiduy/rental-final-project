@@ -59,7 +59,7 @@ function Sellers({ authReducer }) {
         <div className="container">
           <div className="flex flex-wrap -mx-4">
             <div className="w-full px-4">
-              <div className="max-w-full max-h-[600px] overflow-y-auto">
+              <div className="max-w-full ">
                 <table className="table-auto w-full">
                   <thead>
                     <tr className="bg-gray-500 text-center">
@@ -157,7 +157,7 @@ function Sellers({ authReducer }) {
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="max-h-[600px] overflow-y-auto">
                     {sellers.map((seller, index) => (
                       <tr key={index}>
                         <td
@@ -224,15 +224,15 @@ function Sellers({ authReducer }) {
                                "
                         >
                           {seller.status === "pending" ? (
-                            <span className="bg-blue-500 text-black rounded-lg py-2 px-3">
+                            <span className="bg-blue-500 text-white rounded-lg py-2 px-3">
                               {seller.status}
                             </span>
                           ) : seller.status === "rejected" ? (
-                            <span className="bg-red-500 text-black rounded-lg py-2 px-3">
+                            <span className="bg-red-500 text-white rounded-lg py-2 px-3">
                               {seller.status}
                             </span>
                           ) : (
-                            <span className="bg-green-500 text-black rounded-lg py-2 px-3">
+                            <span className="bg-green-500 text-white rounded-lg py-2 px-3">
                               {seller.status}
                             </span>
                           )}
@@ -269,6 +269,9 @@ function Sellers({ authReducer }) {
                     ))}
                   </tbody>
                 </table>
+                <div className="flex w-full justify-center gap-2 my-3">
+                  {[...Array(pages).keys()].map(number => <span key={number + 1} className="font-medium px-2 py-1 border rounded-sm cursor-pointer" onClick={() => setCurrentPage(number + 1)}>{number + 1}</span>)}
+                </div>
               </div>
             </div>
           </div>

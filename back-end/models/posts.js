@@ -5,7 +5,7 @@ const PostSchema = new mongoose.Schema({
     description: String,
     imageLink: [{type: String}],
     address: String,
-    status: {type: String, enum: ['Rented', "Unrented"], default: "Unrented"},
+    status: {type: String, enum: ['Rented', "Deposited", "Unrented"], default: "Unrented"},
     price: String,
     petAllow: {type: String, enum: ['Allow', 'Not Allow']},
     peopleAllow: {type: String, enum: ['Male', 'Female', 'Both']},
