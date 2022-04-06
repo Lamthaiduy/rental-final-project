@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getAllOwnPosts } from "../apis";
 
 function OwnerList({authReducer}) {
@@ -7,6 +8,11 @@ function OwnerList({authReducer}) {
     const [totalPage, setTotalPage] = useState(1);
     const [currentPage, setCurrentPage] = useState(1);
     const [listItems, setListItems] = useState([]);
+    const navigate = useNavigate();
+
+    const handleEditPost = (id) => {
+      navigate(`/edit/${id}`)
+    }
 
     const loadSelfItems = useCallback(async () => {
         const {data} = await getAllOwnPosts(token, currentPage);
@@ -243,7 +249,7 @@ function OwnerList({authReducer}) {
                              border-b border-[#E8E8E8]
                              "
                         >
-                          {item.isWaitingForEditAllow ? <span className="bg-gray-500 text-white px-3 py-1 rounded-md">Waiting For Review</span>: <span className="bg-green-500 text-white px-3 py-1 rounded-md">Available</span>}
+                          {item.isWaitingForEditAllow ? <span className="bg-gray-500 block text-white px-3 py-1 rounded-md">Waiting For Review</span>: <span className="bg-green-500 text-white px-3 py-1 rounded-md">Available</span>}
                         </td>
                         <td
                           className="
@@ -256,7 +262,7 @@ function OwnerList({authReducer}) {
                              border-b border-r border-[#E8E8E8]
                              "
                         >
-                          <button className="bg-blue-500 text-white px-3 py-1 rounded-md">Edit</button>
+                          {!item.isWaitingForEditAllow && <button onClick={() => handleEditPost(item._id)} className="bg-blue-500 text-white px-3 py-1 rounded-md">Edit</button>}
                         </td>
                       </tr>)}
 

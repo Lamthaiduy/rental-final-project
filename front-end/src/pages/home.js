@@ -206,6 +206,7 @@ function Home({ authReducer }) {
                     </div>
                     <span><span className="font-medium">Price:</span> {parseInt(item.price).toLocaleString('en-US')}</span>
                     <div><span className="font-medium">Address:</span> {item.address}</div>
+                    <div className="my-2"><span className="font-medium">Status:</span> <span className={`${item.status === 'Rented' ? 'bg-red-500' : item.status === 'Deposited' ? 'bg-yellow-500' : 'bg-green-500'} text-white font-medium py-1 px-3 rounded-md`}>{item.status}</span></div>
                     <div className="grid grid-cols-2 gap-2 my-2">
                       {item.imageLink.map((image, index) => (
                         <img className="w-auto h-auto" key={index} alt={index} src={image} />

@@ -16,6 +16,7 @@ import Category from "../pages/category";
 import CreatePost from "../pages/createPost";
 import ProfilePage from "../pages/profile";
 import OwnerList from "../pages/ownerList";
+import EditPost from "../pages/editPost";
 
 export default function ApplicationRouter() {
   return (
@@ -123,6 +124,14 @@ export default function ApplicationRouter() {
           element={
             <AuthRouter>
               <OwnerList />
+            </AuthRouter>
+          }
+        />
+        <Route
+          path="/edit/:postId"
+          element={
+            <AuthRouter>
+              <EditPost />
             </AuthRouter>
           }
         />

@@ -16,22 +16,22 @@ postRouter.get('/', authorize([process.env.USER, process.env.SELLER]), async(req
         let allPosts;
         if(!categories) {
             if(!search || search === "") {
-                allPosts = await PostModel.find({}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
-            totalPage = Math.ceil((await PostModel.find({})).length / limit);
+                allPosts = await PostModel.find({isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
+            totalPage = Math.ceil((await PostModel.find({isWaitingForEditAllow: false})).length / limit);
             }
             else {
-                allPosts = await PostModel.find({address: new RegExp(search, 'i')}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
-            totalPage = Math.ceil((await PostModel.find({address: new RegExp(search, 'i')})).length / limit);
+                allPosts = await PostModel.find({address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name');
+            totalPage = Math.ceil((await PostModel.find({address: new RegExp(search, 'i'), isWaitingForEditAllow: false})).length / limit);
             }
         }
         else {
             if(!search || search === "") {
-                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
-            totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}})).length / limit);
+                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, isWaitingForEditAllow: flase}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+            totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}, isWaitingForEditAllow: false})).length / limit);
             }
             else {
-                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i')}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
-            totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i')})).length / limit);
+                allPosts = await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i'), isWaitingForEditAllow: false}).skip(limit * (page -1)).limit(limit).sort({createdAt: -1}).populate('categories', 'name', "Categories");
+            totalPage = Math.ceil((await PostModel.find({"categories": {$all: categories.split(',')}, address: new RegExp(search, 'i'), isWaitingForEditAllow: false})).length / limit);
             }
         }
         res.status(200).json({data: allPosts, totalPage});
@@ -59,7 +59,7 @@ postRouter.get("/:id", authorize(), async(req, res) => {
     const {id} = req.params;
     try {
         const postInDb = await PostModel.findById(id).populate('categories', 'name', 'Categories');
-        res.status(200).json({message: postInDb});
+        res.status(200).json({data: postInDb});
     } catch (error) {
         res.status(400).json({message: error.message});
     }
