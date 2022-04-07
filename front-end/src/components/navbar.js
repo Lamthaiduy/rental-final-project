@@ -3,15 +3,47 @@ import { connect } from "react-redux";
 import { logoutAction } from "../reducers/action/authAction";
 import avatar from "../assets/avatar.png";
 import roles from "../constants/roles";
+import { getUserNotifications, markNotificationAdRead } from "../apis/";
+import { useCallback, useEffect, useState } from "react";
+import { BellIcon, BookmarkIcon as SolidBookmark } from "@heroicons/react/solid";
+import { BookmarkIcon as OutLineBookmark } from "@heroicons/react/outline";
 
 function Header(props) {
   const { authReducer, logout } = props;
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
+  const [toggleNoti, setToggleNoti] = useState(false);
   function handleLogout(e) {
     e.preventDefault();
     logout();
     navigate("/login");
   }
+
+  const handleToggleNotification = () => {
+    setToggleNoti(prev => !prev)
+  }
+
+  const loadNotification = useCallback(async () => {
+    const { data } = await getUserNotifications(authReducer.token);
+    setNotifications(data.data);
+  }, [authReducer.token]);
+
+  const markAsRead = async (id) => {
+    const {status} = await markNotificationAdRead(authReducer.token, id);
+    loadNotification();
+  }
+
+  useEffect(() => {
+    let interval;
+    if (authReducer.isAuth) {
+      loadNotification();
+      interval = setInterval(() => {
+        loadNotification();
+      }, 10000);
+    }
+    return () => clearInterval(interval);
+  }, [loadNotification, authReducer.isAuth]);
+
   return (
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
       <div className="container flex flex-wrap justify-between items-center mx-auto">
@@ -43,6 +75,28 @@ function Header(props) {
           {authReducer.isAuth ? (
             <>
               <div className="flex items-center gap-3 md:order-2">
+                <div className="relative">
+                  <div className="relative">
+                  <BellIcon
+                    onClick={handleToggleNotification}
+                    className="w-6 h-10 hover:text-gray-600 cursor-pointer"
+                  />
+                  <div className={`${toggleNoti ? "block": 'hidden'} z-10 w-56 bg-white border absolute right-[50%] translate-x-[50%]`}>
+                    {notifications.map((item) => (
+                      <div key={item._id} className={`w-full flex pr-3 ${!item.isRead ? "bg-white": "bg-gray-400 text-white"}`}>
+                        <div className={` font-medium`}>{item.description}</div>
+                        <button disabled={item.isRead} onClick={() => markAsRead(item._id)} className="disabled:cursor-not-allowed">{item.isRead ? <SolidBookmark className="w-3 h-3" /> : <OutLineBookmark className="w-3 h-3" />}</button>
+                      </div>
+                    ))}
+                  </div>
+                  </div>
+                  {notifications?.length > 0 && (
+                    <span className="absolute right-0 top-0 rounded-full bg-blue-500 w-4 h-4 top right p-0 m-0 text-white font-mono text-sm  leading-tight text-center">
+                      {notifications?.filter(item => !item.isRead).length}
+                    </span>
+                  )}
+                  
+                </div>
                 <button
                   type="button"
                   className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
@@ -55,7 +109,7 @@ function Header(props) {
                     onClick={() => navigate("/profile")}
                     className="w-8 h-8 rounded-full"
                     src={authReducer?.user?.avatar || avatar}
-                    alt="user photo"
+                    alt="avatar"
                   />
                 </button>
                 <button
@@ -139,7 +193,7 @@ function Header(props) {
             )}
             {authReducer.user.role === roles.SELLER && (
               <>
-              <li>
+                <li>
                   <Link
                     to="/home"
                     className="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:dark:hover:text-white dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
@@ -155,7 +209,6 @@ function Header(props) {
                     Create Post
                   </Link>
                 </li>
-                
               </>
             )}
           </ul>

@@ -4,7 +4,7 @@ import {logoutAction} from '../reducers/action/authAction';
 import { connect } from 'react-redux';
 
 function SideBar(props) {
-  const { authReducer, logout } = props;
+  const { logout } = props;
   const navigate = useNavigate();
   function handleLogout(e) {
       e.preventDefault();

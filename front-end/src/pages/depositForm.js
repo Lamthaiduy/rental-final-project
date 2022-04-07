@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 import { handlePayment, getDetailPost } from "../apis";
 import { useState, useCallback, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {  useParams } from "react-router-dom";
 function DepositPage({ authReducer }) {
   const [formData, setFormData] = useState({
     title: "",

@@ -128,3 +128,35 @@ export async function handlePayment(token, body) {
         }
     })
 }
+
+export async function handleDepositSuccess (token, body) {
+    return await apisBase.post(`/deposits/create-deposit/`,body, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function searchExistedDeposit(token, body) {
+    return await apisBase.post(`/deposits/search/`,body, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function getUserNotifications(token) {
+    return await apisBase.get(`/notifications`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function markNotificationAdRead(token, id) {
+    return await apisBase.get(`/notifications/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}

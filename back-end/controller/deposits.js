@@ -2,7 +2,10 @@ const depositRouter = require('express').Router({mergeParams: true});
 const passport = require('passport');
 const authorize = require('../middleware/authorize');
 const UserModel = require('../models/user');
+const PostModel = require('../models/posts');
 const DepositModel = require('../models/deposit');
+const ConservationModel = require('../models/conservation');
+const NotificationModel = require('../models/notification');
 const QueryString = require('qs');
 const config = require('../config/vnpay')
 const dateFormat = require('dateformat')
@@ -67,10 +70,27 @@ depositRouter.post('/create-url', async(req, res) => {
     res.status(201).json({url: vnpUrl})
 })
 
-depositRouter.post('/create-deposit', async (req, res) => {
+depositRouter.post('/search', async (req, res) => {
     const {postId, totalDeposit} = req.body;
+    const depositInDB = await DepositModel.findOne({target: postId, totalDeposit});
+    if(depositInDB) {
+        res.status(400).json({message: "Already Deposited"})
+    }
+    else {
+        res.status(200).json({message: "Not yet"})
+    }
+})
+
+depositRouter.post('/create-deposit', async (req, res) => {
+    const {postId, totalDeposit, orderId} = req.body;
     const user = req.user;
-    const newDeposit = new DepositModel({user: user._id, target: postId, totalDeposit});
+    const postInDb = await PostModel.findById(postId);
+    await PostModel.findByIdAndUpdate(postId, {status: "Deposited"})
+    const newConservation = new ConservationModel({user: user._id, seller: postInDb.seller._id});
+    await newConservation.save();
+    const newNotification = new NotificationModel({receiver: postInDb.seller._id, description: `${user.fullname} had made a deposit for ${postInDb.title}`});
+    await newNotification.save();
+    const newDeposit = new DepositModel({user: user._id, target: postId, totalDeposit, orderId});
     await newDeposit.save();
     res.status(201).json({message: "done"})
 })

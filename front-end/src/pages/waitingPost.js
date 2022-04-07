@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import {getAllWaitingPosts, handleUpdatePostRequest } from "../apis";
 
 function WaitingPost({ authReducer }) {

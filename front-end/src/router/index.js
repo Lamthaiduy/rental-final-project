@@ -113,7 +113,7 @@ function ApplicationRouter({authReducer}) {
           }
         />
           <Route
-          path="/success"
+          path="/vnp_return"
           element={
             <AuthRouter>
               <Success />
