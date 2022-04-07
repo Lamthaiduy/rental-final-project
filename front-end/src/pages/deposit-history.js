@@ -1,26 +1,20 @@
 import { useCallback, useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { getAllOwnPosts, markAsRented } from "../apis";
+import { getPersonalDeposit, updateDepositStatus } from "../apis";
 
-function OwnerList({ authReducer }) {
+function DepositHistory({ authReducer }) {
   const { token } = authReducer;
   const [totalPage, setTotalPage] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [listItems, setListItems] = useState([]);
-  const navigate = useNavigate();
 
-  const handleEditPost = (id) => {
-    navigate(`/edit/${id}`);
+  const handleUpdateStatus = async (id, status) => {
+    await updateDepositStatus(token, id, status)
+    loadSelfItems();
   };
 
-  const markPostAsRented = async (id) => {
-    await markAsRented(token, id);
-    loadSelfItems();
-  }
-
   const loadSelfItems = useCallback(async () => {
-    const { data } = await getAllOwnPosts(token, currentPage);
+    const { data } = await getPersonalDeposit(token, currentPage);
     setListItems(data.data);
     setTotalPage(data.totalPage);
   }, [token, currentPage]);
@@ -53,7 +47,7 @@ function OwnerList({ authReducer }) {
                              border-l border-transparent
                              "
                       >
-                        Title
+                        Transaction ID
                       </th>
                       <th
                         className="
@@ -68,7 +62,7 @@ function OwnerList({ authReducer }) {
                              lg:px-4
                              "
                       >
-                        Address
+                        Total Deposit
                       </th>
                       <th
                         className="
@@ -83,7 +77,7 @@ function OwnerList({ authReducer }) {
                              lg:px-4
                              "
                       >
-                        Price
+                        Deposit Status
                       </th>
                       <th
                         className="
@@ -98,7 +92,7 @@ function OwnerList({ authReducer }) {
                              lg:px-4
                              "
                       >
-                        Pet Allow
+                        Home Title
                       </th>
                       <th
                         className="
@@ -113,23 +107,7 @@ function OwnerList({ authReducer }) {
                              lg:px-4
                              "
                       >
-                        People Allow
-                      </th>
-                      <th
-                        className="
-                             w-1/6
-                             min-w-[160px]
-                             text-lg
-                             font-semibold
-                             text-white
-                             py-4
-                             lg:py-7
-                             px-3
-                             lg:px-4
-                             border-r border-transparent
-                             "
-                      >
-                        People Limit
+                        Seller
                       </th>
                       <th
                         className="
@@ -145,23 +123,7 @@ function OwnerList({ authReducer }) {
                              border-r border-transparent
                              "
                       >
-                        Rent Status
-                      </th>
-                      <th
-                        className="
-                             w-1/6
-                             min-w-[160px]
-                             text-lg
-                             font-semibold
-                             text-white
-                             py-4
-                             lg:py-7
-                             px-3
-                             lg:px-4
-                             border-r border-transparent
-                             "
-                      >
-                        Edit Status
+                        Total Price
                       </th>
                       <th
                         className="
@@ -196,7 +158,7 @@ function OwnerList({ authReducer }) {
                              border-b border-l border-[#E8E8E8]
                              "
                           >
-                            {item.title}
+                            {item.orderId}
                           </td>
                           <td
                             className="
@@ -209,7 +171,7 @@ function OwnerList({ authReducer }) {
                              border-b border-[#E8E8E8]
                              "
                           >
-                            {item.address}
+                            {parseInt(item.totalDeposit).toLocaleString('en-US')} VND
                           </td>
                           <td
                             className="
@@ -219,67 +181,15 @@ function OwnerList({ authReducer }) {
                              py-5
                              px-2
                              bg-[#F3F6FF]
-                             border-b border-[#E8E8E8]
-                             "
-                          >
-                            {parseInt(item.price).toLocaleString("en-US")}
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-white
-                             border-b border-[#E8E8E8]
-                             "
-                          >
-                            {item.petAllow}
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-[#F3F6FF]
-                             border-b border-[#E8E8E8]
-                             "
-                          >
-                            {item.peopleAllow}
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-white
-                             border-b border-r border-[#E8E8E8]
-                             "
-                          >
-                            {item.personLimit}
-                          </td>
-                          <td
-                            className="
-                             text-center text-dark
-                             font-medium
-                             text-base
-                             py-5
-                             px-2
-                             bg-white
                              border-b border-[#E8E8E8]
                              "
                           >
                             <span
                               className={`${
-                                item.status === "Rented"
-                                  ? "bg-red-500"
-                                  : item.status === "Deposited"
-                                  ? "bg-yellow-500"
+                                item.status === "In Deposit"
+                                  ? "bg-violet-500"
+                                  : item.status === "Refund Request"
+                                  ? "bg-gray-500"
                                   : "bg-green-500"
                               } text-white font-medium py-1 px-3 rounded-md`}
                             >
@@ -293,19 +203,24 @@ function OwnerList({ authReducer }) {
                              text-base
                              py-5
                              px-2
+                             bg-white
+                             border-b border-[#E8E8E8]
+                             "
+                          >
+                            {item.target.title}
+                          </td>
+                          <td
+                            className="
+                             text-center text-dark
+                             font-medium
+                             text-base
+                             py-5
+                             px-2
                              bg-[#F3F6FF]
                              border-b border-[#E8E8E8]
                              "
                           >
-                            {item.isWaitingForEditAllow ? (
-                              <span className="bg-gray-500 block text-white px-3 py-1 rounded-md">
-                                Waiting For Review
-                              </span>
-                            ) : (
-                              <span className="bg-green-500 text-white px-3 py-1 rounded-md">
-                                Available
-                              </span>
-                            )}
+                            {item.target.seller.fullname}
                           </td>
                           <td
                             className="
@@ -316,26 +231,40 @@ function OwnerList({ authReducer }) {
                              px-2
                              bg-white
                              border-b border-r border-[#E8E8E8]
+                             "
+                          >
+                            {parseInt(item.target.price).toLocaleString("en-US")} VND
+                          </td>
+                          <td
+                            className="
+                             text-center text-dark
+                             font-medium
+                             text-base
+                             py-5
+                             px-2
+                             bg-white
+                             border-b border-[#E8E8E8]
                              flex
                              justify-center
                              gap-2
                              "
                           >
                             <button
-                              onClick={() => handleEditPost(item._id)}
+                              onClick={() => handleUpdateStatus(item._id, 'Refund Request')}
                               className={`bg-blue-500 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-3 py-1 rounded-md`}
-                              disabled={item.isWaitingForEditAllow}
+                              disabled={item.status !== 'In Deposit'}
                             >
-                              Edit
+                              Refund Request
                             </button>
                             <button
-                              onClick={() => markPostAsRented(item._id)}
+                              onClick={() => handleUpdateStatus(item._id, 'Paid')}
                               className="bg-green-500 disabled:bg-gray-500 disabled:cursor-not-allowed text-white px-3 py-1 rounded-md"
-                              disabled={item.status !== 'Deposited'}
+                              disabled={item.status !== 'In Deposit'}
                             >
-                              Mark as Rented
+                                Rented
                             </button>
                           </td>
+                         
                         </tr>
                       ))}
                   </tbody>
@@ -366,4 +295,4 @@ const mapStateToProps = (state) => {
   };
 };
 
-export default connect(mapStateToProps)(OwnerList);
+export default connect(mapStateToProps)(DepositHistory);

@@ -113,6 +113,13 @@ export async function updatePost(token, id, body) {
         }
     })
 }
+export async function markAsRented(token, id, ) {
+    return await apisBase.get(`/posts/rented/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
 
 export async function handleUpdatePostRequest(token, id, status) {
     return await apisBase.put(`/posts/process/${id}`,{status: status}, {
@@ -121,6 +128,26 @@ export async function handleUpdatePostRequest(token, id, status) {
         }
     })
 }
+
+
+export async function getPersonalDeposit(token) {
+    return await apisBase.get(`/deposits/list/personal`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+
+
+export async function updateDepositStatus(token, id, status) {
+    return await apisBase.put(`/deposits/status/${id}`,{status}, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
 export async function handlePayment(token, body) {
     return await apisBase.post(`/deposits/create-url/`,body, {
         headers: {

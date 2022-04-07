@@ -28,6 +28,44 @@ function sortObject(obj) {
 
 depositRouter.use(passport.authenticate('jwt', {session: false}))
 
+depositRouter.get('/', async (req, res) => {
+    let {page} = req.query;
+    const limit = process.env.LIMIT;
+    if(!page) page = 1;
+    try {
+        const totalPage = Math.ceil((await (await DepositModel.find({})).length / limit));
+        const depositPerPage = await DepositModel.find({}).populate('user').populate({path: 'target', populate: {path: 'seller'}})
+        res.status(200).json({data: depositPerPage, totalPage})
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
+depositRouter.get('/list/personal', async (req, res) => {
+    const user = req.user;
+    let {page} = req.query;
+    const limit = process.env.LIMIT;
+    if(!page) page = 1;
+    try {
+        const totalPage = Math.ceil((await (await DepositModel.find({user: user._id})).length / limit));
+        const depositPerPage = await DepositModel.find({user: user._id}).populate('user').populate({path: 'target', populate: {path: 'seller'}})
+        res.status(200).json({data: depositPerPage, totalPage})
+    } catch (error) {
+        res.status(400).json({message: error.message})
+    }
+})
+
+depositRouter.put('/status/:id', async (req, res) => {
+     const {id} = req.params;
+     const {status} = req.body;
+     try {
+         await DepositModel.findByIdAndUpdate(id, {status})
+         res.status(200).json({message: "status changed"})
+     } catch (error) {
+         res.status(400).json({message: error.message})
+     }
+})
+
 depositRouter.post('/create-url', async(req, res) => {
     const {amount, postId} = req.body;
     let tmnCode = config.vnp_TmnCode;

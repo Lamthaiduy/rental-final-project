@@ -6,7 +6,7 @@ import roles from "../constants/roles";
 import { getUserNotifications, markNotificationAdRead } from "../apis/";
 import { useCallback, useEffect, useState } from "react";
 import { BellIcon, BookmarkIcon as SolidBookmark } from "@heroicons/react/solid";
-import { BookmarkIcon as OutLineBookmark } from "@heroicons/react/outline";
+import { BookmarkIcon as OutLineBookmark, ReceiptRefundIcon } from "@heroicons/react/outline";
 
 function Header(props) {
   const { authReducer, logout } = props;
@@ -29,20 +29,20 @@ function Header(props) {
   }, [authReducer.token]);
 
   const markAsRead = async (id) => {
-    const {status} = await markNotificationAdRead(authReducer.token, id);
+    await markNotificationAdRead(authReducer.token, id);
     loadNotification();
   }
 
   useEffect(() => {
     let interval;
-    if (authReducer.isAuth) {
+    if (authReducer.isAuth && authReducer.user.role === roles.SELLER) {
       loadNotification();
       interval = setInterval(() => {
         loadNotification();
       }, 10000);
     }
     return () => clearInterval(interval);
-  }, [loadNotification, authReducer.isAuth]);
+  }, [loadNotification, authReducer.isAuth, authReducer.user.role]);
 
   return (
     <nav className="bg-white border-gray-200 px-2 sm:px-4 py-2.5 rounded dark:bg-gray-800">
@@ -75,13 +75,13 @@ function Header(props) {
           {authReducer.isAuth ? (
             <>
               <div className="flex items-center gap-3 md:order-2">
-                <div className="relative">
+                {authReducer.user.role === roles.SELLER && <div className="relative">
                   <div className="relative">
                   <BellIcon
                     onClick={handleToggleNotification}
                     className="w-6 h-10 hover:text-gray-600 cursor-pointer"
                   />
-                  <div className={`${toggleNoti ? "block": 'hidden'} z-10 w-56 bg-white border absolute right-[50%] translate-x-[50%]`}>
+                  <div className={`${toggleNoti ? "block": 'hidden'} z-10 w-56 max-h-56 overflow-y-auto bg-white border absolute right-[50%] translate-x-[50%]`}>
                     {notifications.map((item) => (
                       <div key={item._id} className={`w-full flex pr-3 ${!item.isRead ? "bg-white": "bg-gray-400 text-white"}`}>
                         <div className={` font-medium`}>{item.description}</div>
@@ -95,8 +95,11 @@ function Header(props) {
                       {notifications?.filter(item => !item.isRead).length}
                     </span>
                   )}
-                  
-                </div>
+                </div>}
+                {authReducer.user.role === roles.USER && <Link to='/deposit-history' className="flex gap-1 text-white px-1 py-2 bg-gray-500 rounded-md cursor-pointer">
+                  <ReceiptRefundIcon className="w-10 h-6 px-0 py-0 m-0" />
+                  <span>Deposity History</span>
+                </Link>}
                 <button
                   type="button"
                   className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"

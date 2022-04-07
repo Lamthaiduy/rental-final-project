@@ -111,7 +111,7 @@ postRouter.put('/:id', authorize(process.env.SELLER), async (req, res) => {
     }
 })
 
-postRouter.put('rented/:id', authorize(process.env.SELLER), async (req, res) => {
+postRouter.get('/rented/:id', authorize(process.env.SELLER), async (req, res) => {
     const {id} = req.params;
     try {
     await PostModel.findByIdAndUpdate(id, {status: 'Rented'});

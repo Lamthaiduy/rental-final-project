@@ -23,6 +23,7 @@ import roles from "../constants/roles";
 import NotFound from "../pages/404";
 import DepositForm from "../pages/depositForm";
 import Success from "../pages/sucess";
+import DepositHistory from "../pages/deposit-history";
 
 function ApplicationRouter({authReducer}) {
   const {user} = authReducer;
@@ -109,6 +110,14 @@ function ApplicationRouter({authReducer}) {
           element={
             <AuthRouter>
               <DepositForm />
+            </AuthRouter>
+          }
+        />
+          <Route
+          path="/deposit-history"
+          element={
+            <AuthRouter>
+              <DepositHistory />
             </AuthRouter>
           }
         />
