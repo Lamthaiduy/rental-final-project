@@ -63,11 +63,11 @@ function SideBar(props) {
             </li>
             <li>
               <NavLink
-                to="/dashboard/refund"
+                to="/dashboard/deposit"
                 className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700"
               >
                 <CreditCardIcon className='w-10 h-10 text-gray-600' />
-                <span className="ml-3">Refund Requests</span>
+                <span className="ml-3">User Deposits</span>
               </NavLink>
             </li>
             <li>

@@ -15,7 +15,7 @@ function Success({authReducer}) {
 
   const checkAndCreateDeposit = useCallback(async () => {
     if(vnp_ResponseCode === '00') {
-      const {status} = await searchExistedDeposit(authReducer.token, {postId, totalDeposit});
+      const {status} = await searchExistedDeposit(authReducer.token, {postId, totalDeposit, orderId});
       if(status === 200) {
         await handleDepositSuccess(authReducer.token, {postId, totalDeposit, orderId})
       }

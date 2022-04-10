@@ -28,20 +28,20 @@ function sortObject(obj) {
 
 depositRouter.use(passport.authenticate('jwt', {session: false}))
 
-depositRouter.get('/', async (req, res) => {
+depositRouter.get('/',authorize(process.env.ADMIN), async (req, res) => {
     let {page} = req.query;
     const limit = process.env.LIMIT;
     if(!page) page = 1;
     try {
-        const totalPage = Math.ceil((await (await DepositModel.find({})).length / limit));
-        const depositPerPage = await DepositModel.find({}).populate('user').populate({path: 'target', populate: {path: 'seller'}})
+        const totalPage = Math.ceil((await (await DepositModel.find()).length / limit));
+        const depositPerPage = await DepositModel.find().populate('user').populate({path: 'target', populate: {path: 'seller'}})
         res.status(200).json({data: depositPerPage, totalPage})
     } catch (error) {
         res.status(400).json({message: error.message})
     }
 })
 
-depositRouter.get('/list/personal', async (req, res) => {
+depositRouter.get('/list/personal',authorize(process.env.USER) ,async (req, res) => {
     const user = req.user;
     let {page} = req.query;
     const limit = process.env.LIMIT;
@@ -55,10 +55,14 @@ depositRouter.get('/list/personal', async (req, res) => {
     }
 })
 
-depositRouter.put('/status/:id', async (req, res) => {
+depositRouter.put('/status/:id',authorize([process.env.USER, process.env.ADMIN]), async (req, res) => {
      const {id} = req.params;
      const {status} = req.body;
      try {
+         if(status == "Had Refund") {
+            const depositInDB = await DepositModel.findById(id);
+            await PostModel.findByIdAndUpdate(depositInDB.target, {status: "Unrented"});
+         }
          await DepositModel.findByIdAndUpdate(id, {status})
          res.status(200).json({message: "status changed"})
      } catch (error) {
@@ -109,8 +113,8 @@ depositRouter.post('/create-url', async(req, res) => {
 })
 
 depositRouter.post('/search', async (req, res) => {
-    const {postId, totalDeposit} = req.body;
-    const depositInDB = await DepositModel.findOne({target: postId, totalDeposit});
+    const {postId, totalDeposit, orderId} = req.body;
+    const depositInDB = await DepositModel.findOne({target: postId, totalDeposit, orderId});
     if(depositInDB) {
         res.status(400).json({message: "Already Deposited"})
     }

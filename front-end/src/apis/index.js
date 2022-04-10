@@ -130,6 +130,14 @@ export async function handleUpdatePostRequest(token, id, status) {
 }
 
 
+export async function getAllDeposit(token) {
+    return await apisBase.get(`/deposits/`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
 export async function getPersonalDeposit(token) {
     return await apisBase.get(`/deposits/list/personal`, {
         headers: {
@@ -147,6 +155,8 @@ export async function updateDepositStatus(token, id, status) {
         }
     })
 }
+
+
 
 export async function handlePayment(token, body) {
     return await apisBase.post(`/deposits/create-url/`,body, {
@@ -166,6 +176,22 @@ export async function handleDepositSuccess (token, body) {
 
 export async function searchExistedDeposit(token, body) {
     return await apisBase.post(`/deposits/search/`,body, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function getAllSellerPayment(token) {
+    return await apisBase.get("/payment/", {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+export async function handlePaidForSeller(token, body) {
+    return await apisBase.post("/payment/", {...body}, {
         headers: {
             "Authorization": `Bearer ${token}`
         }

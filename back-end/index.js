@@ -12,6 +12,7 @@ const db = require('./db/db');
 const postRouter = require('./controller/post');
 const depositRouter = require('./controller/deposits');
 const notiRouter = require('./controller/notification');
+const paymentRoute = require('./controller/payment');
 const app = express();
 const PORT = process.env.PORT | 8080;
 app.use(cors({
@@ -33,6 +34,7 @@ app.use('/api/categories', categoryRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/deposits', depositRouter);
 app.use('/api/notifications', notiRouter);
+app.use("/api/payment", paymentRoute)
 
 app.listen(PORT, () => {
     console.log('Running on PORT: ' + PORT);

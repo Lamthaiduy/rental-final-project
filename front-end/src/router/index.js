@@ -24,6 +24,7 @@ import NotFound from "../pages/404";
 import DepositForm from "../pages/depositForm";
 import Success from "../pages/sucess";
 import DepositHistory from "../pages/deposit-history";
+import RefundRequest from "../pages/refund-request";
 
 function ApplicationRouter({authReducer}) {
   const {user} = authReducer;
@@ -92,6 +93,14 @@ function ApplicationRouter({authReducer}) {
             element={
               <AdminProtectedRouter>
                 <WaitingPost />
+              </AdminProtectedRouter>
+            }
+          />
+           <Route
+            path="/dashboard/deposit"
+            element={
+              <AdminProtectedRouter>
+                <RefundRequest />
               </AdminProtectedRouter>
             }
           />

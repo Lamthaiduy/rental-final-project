@@ -5,8 +5,14 @@ import avatar from "../assets/avatar.png";
 import roles from "../constants/roles";
 import { getUserNotifications, markNotificationAdRead } from "../apis/";
 import { useCallback, useEffect, useState } from "react";
-import { BellIcon, BookmarkIcon as SolidBookmark } from "@heroicons/react/solid";
-import { BookmarkIcon as OutLineBookmark, ReceiptRefundIcon } from "@heroicons/react/outline";
+import {
+  BellIcon,
+  BookmarkIcon as SolidBookmark,
+} from "@heroicons/react/solid";
+import {
+  BookmarkIcon as OutLineBookmark,
+  ReceiptRefundIcon,
+} from "@heroicons/react/outline";
 
 function Header(props) {
   const { authReducer, logout } = props;
@@ -20,8 +26,8 @@ function Header(props) {
   }
 
   const handleToggleNotification = () => {
-    setToggleNoti(prev => !prev)
-  }
+    setToggleNoti((prev) => !prev);
+  };
 
   const loadNotification = useCallback(async () => {
     const { data } = await getUserNotifications(authReducer.token);
@@ -31,7 +37,7 @@ function Header(props) {
   const markAsRead = async (id) => {
     await markNotificationAdRead(authReducer.token, id);
     loadNotification();
-  }
+  };
 
   useEffect(() => {
     let interval;
@@ -75,31 +81,70 @@ function Header(props) {
           {authReducer.isAuth ? (
             <>
               <div className="flex items-center gap-3 md:order-2">
-                {authReducer.user.role === roles.SELLER && <div className="relative">
+                {authReducer.user.role === roles.SELLER && (
+                  <>
                   <div className="relative">
-                  <BellIcon
-                    onClick={handleToggleNotification}
-                    className="w-6 h-10 hover:text-gray-600 cursor-pointer"
-                  />
-                  <div className={`${toggleNoti ? "block": 'hidden'} z-10 w-56 max-h-56 overflow-y-auto bg-white border absolute right-[50%] translate-x-[50%]`}>
-                    {notifications.map((item) => (
-                      <div key={item._id} className={`w-full flex pr-3 ${!item.isRead ? "bg-white": "bg-gray-400 text-white"}`}>
-                        <div className={` font-medium`}>{item.description}</div>
-                        <button disabled={item.isRead} onClick={() => markAsRead(item._id)} className="disabled:cursor-not-allowed">{item.isRead ? <SolidBookmark className="w-3 h-3" /> : <OutLineBookmark className="w-3 h-3" />}</button>
+                    <div className="relative">
+                      <BellIcon
+                        onClick={handleToggleNotification}
+                        className="w-6 h-10 hover:text-gray-600 cursor-pointer"
+                      />
+                      <div
+                        className={`${
+                          toggleNoti ? "block" : "hidden"
+                        } z-10 w-56 max-h-56 overflow-y-auto bg-white border absolute right-[50%] translate-x-[50%]`}
+                      >
+                        {notifications.map((item) => (
+                          <div
+                            key={item._id}
+                            className={`w-full flex pr-3 ${
+                              !item.isRead
+                                ? "bg-white"
+                                : "bg-gray-400 text-white"
+                            }`}
+                          >
+                            <div className={` font-medium`}>
+                              {item.description}
+                            </div>
+                            <button
+                              disabled={item.isRead}
+                              onClick={() => markAsRead(item._id)}
+                              className="disabled:cursor-not-allowed"
+                            >
+                              {item.isRead ? (
+                                <SolidBookmark className="w-3 h-3" />
+                              ) : (
+                                <OutLineBookmark className="w-3 h-3" />
+                              )}
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                    {notifications?.length > 0 && (
+                      <span className="absolute right-0 top-0 rounded-full bg-blue-500 w-4 h-4 top right p-0 m-0 text-white font-mono text-sm  leading-tight text-center">
+                        {notifications?.filter((item) => !item.isRead).length}
+                      </span>
+                    )}
                   </div>
-                  </div>
-                  {notifications?.length > 0 && (
-                    <span className="absolute right-0 top-0 rounded-full bg-blue-500 w-4 h-4 top right p-0 m-0 text-white font-mono text-sm  leading-tight text-center">
-                      {notifications?.filter(item => !item.isRead).length}
-                    </span>
-                  )}
-                </div>}
-                {authReducer.user.role === roles.USER && <Link to='/deposit-history' className="flex gap-1 text-white px-1 py-2 bg-gray-500 rounded-md cursor-pointer">
-                  <ReceiptRefundIcon className="w-10 h-6 px-0 py-0 m-0" />
-                  <span>Deposity History</span>
-                </Link>}
+                  <Link
+                    to="/transaction"
+                    className="flex gap-1 text-white px-1 py-2 bg-gray-500 rounded-md cursor-pointer"
+                  >
+                    <ReceiptRefundIcon className="w-10 h-6 px-0 py-0 m-0" />
+                    <span>Your Transaction</span>
+                  </Link>
+                  </>
+                )}
+                {authReducer.user.role === roles.USER && (
+                  <Link
+                    to="/deposit-history"
+                    className="flex gap-1 text-white px-1 py-2 bg-gray-500 rounded-md cursor-pointer"
+                  >
+                    <ReceiptRefundIcon className="w-10 h-6 px-0 py-0 m-0" />
+                    <span>Deposity History</span>
+                  </Link>
+                )}
                 <button
                   type="button"
                   className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
