@@ -128,7 +128,7 @@ function Header(props) {
                     )}
                   </div>
                   <Link
-                    to="/transaction"
+                    to="/transaction-history"
                     className="flex gap-1 text-white px-1 py-2 bg-gray-500 rounded-md cursor-pointer"
                   >
                     <ReceiptRefundIcon className="w-10 h-6 px-0 py-0 m-0" />

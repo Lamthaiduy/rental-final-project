@@ -130,16 +130,16 @@ export async function handleUpdatePostRequest(token, id, status) {
 }
 
 
-export async function getAllDeposit(token) {
-    return await apisBase.get(`/deposits/`, {
+export async function getAllDeposit(token, page=1) {
+    return await apisBase.get(`/deposits/?page=${page}`, {
         headers: {
             "Authorization": `Bearer ${token}`
         }
     })
 }
 
-export async function getPersonalDeposit(token) {
-    return await apisBase.get(`/deposits/list/personal`, {
+export async function getPersonalDeposit(token, page=1) {
+    return await apisBase.get(`/deposits/list/personal?page=${page}`, {
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -182,8 +182,8 @@ export async function searchExistedDeposit(token, body) {
     })
 }
 
-export async function getAllSellerPayment(token) {
-    return await apisBase.get("/payment/", {
+export async function getAllSellerPayment(token, ) {
+    return await apisBase.get(`/payment/`, {
         headers: {
             "Authorization": `Bearer ${token}`
         }

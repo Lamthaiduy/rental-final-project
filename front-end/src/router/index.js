@@ -25,6 +25,7 @@ import DepositForm from "../pages/depositForm";
 import Success from "../pages/sucess";
 import DepositHistory from "../pages/deposit-history";
 import RefundRequest from "../pages/refund-request";
+import TransactionHistory from "../pages/transaction-history";
 
 function ApplicationRouter({authReducer}) {
   const {user} = authReducer;
@@ -177,6 +178,14 @@ function ApplicationRouter({authReducer}) {
           element={
             <AuthRouter>
               <OwnerList />
+            </AuthRouter>
+          }
+        />
+        <Route
+          path="/transaction-history"
+          element={
+            <AuthRouter>
+              <TransactionHistory />
             </AuthRouter>
           }
         />

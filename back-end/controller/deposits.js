@@ -34,7 +34,7 @@ depositRouter.get('/',authorize(process.env.ADMIN), async (req, res) => {
     if(!page) page = 1;
     try {
         const totalPage = Math.ceil((await (await DepositModel.find()).length / limit));
-        const depositPerPage = await DepositModel.find().populate('user').populate({path: 'target', populate: {path: 'seller'}})
+        const depositPerPage = await DepositModel.find().skip(limit * (page-1)).limit(limit).populate('user').populate({path: 'target', populate: {path: 'seller'}})
         res.status(200).json({data: depositPerPage, totalPage})
     } catch (error) {
         res.status(400).json({message: error.message})
@@ -48,7 +48,7 @@ depositRouter.get('/list/personal',authorize(process.env.USER) ,async (req, res)
     if(!page) page = 1;
     try {
         const totalPage = Math.ceil((await (await DepositModel.find({user: user._id})).length / limit));
-        const depositPerPage = await DepositModel.find({user: user._id}).populate('user').populate({path: 'target', populate: {path: 'seller'}})
+        const depositPerPage = await DepositModel.find({user: user._id}).skip(limit * (page-1)).limit(limit).populate('user').populate({path: 'target', populate: {path: 'seller'}})
         res.status(200).json({data: depositPerPage, totalPage})
     } catch (error) {
         res.status(400).json({message: error.message})

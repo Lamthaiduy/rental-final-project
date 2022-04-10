@@ -2,17 +2,17 @@ const PaymentModel = require('../models/payment');
 const DepositModel = require('../models/deposit');
 const PostModel = require('../models/posts');
 const UserModel = require('../models/user');
+const passport = require('passport');
 
 const paymentRoute = require('express').Router();
 
+paymentRoute.use(passport.authenticate('jwt', {session: false}));
+
 paymentRoute.get('/', async (req, res) => {
-    let {page} = req.query;
-    const limit = process.env.LIMIT;
-    if(!page) page = 1;
+    let seller = req.user;
     try {
-        const totalPage = Math.ceil((await (await PaymentModel.find()).length / limit));
-        const paymentPerPage = await PaymentModel.find().populate('seller').populate({path: 'fromDeposit', populate: {path: 'user'}});
-        res.status(200).json({data: paymentPerPage, totalPage})
+        const paymentPerPage = await PaymentModel.find({seller: seller._id}).populate('seller').populate({path: 'fromDeposit', populate: {path: 'user target'}});
+        res.status(200).json({data: paymentPerPage})
     } catch (error) {
         res.status(400).json({message: error.message})
     }
