@@ -26,6 +26,7 @@ import Success from "../pages/sucess";
 import DepositHistory from "../pages/deposit-history";
 import RefundRequest from "../pages/refund-request";
 import TransactionHistory from "../pages/transaction-history";
+import Messsage from "../pages/messsage";
 
 function ApplicationRouter({authReducer}) {
   const {user} = authReducer;
@@ -197,6 +198,9 @@ function ApplicationRouter({authReducer}) {
             </AuthRouter>
           }
         /></>}
+        <Route path="/message" element={<AuthRouter>
+              <Messsage />
+            </AuthRouter>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

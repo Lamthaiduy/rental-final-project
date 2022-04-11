@@ -213,3 +213,17 @@ export async function markNotificationAdRead(token, id) {
         }
     })
 }
+export async function getConversations(token) {
+    return await apisBase.get(`/messages/`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}
+export async function getConversationsByID(token, id) {
+    return await apisBase.get(`/messages/${id}`, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    })
+}

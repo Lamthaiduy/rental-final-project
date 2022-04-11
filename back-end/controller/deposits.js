@@ -128,8 +128,11 @@ depositRouter.post('/create-deposit', async (req, res) => {
     const user = req.user;
     const postInDb = await PostModel.findById(postId);
     await PostModel.findByIdAndUpdate(postId, {status: "Deposited"})
-    const newConservation = new ConservationModel({user: user._id, seller: postInDb.seller._id});
-    await newConservation.save();
+    const check = await ConservationModel.findOne({user: user._id, seller: postInDb.seller._id});
+    if(!check) {
+        const newConservation = new ConservationModel({user: user._id, seller: postInDb.seller._id});
+        await newConservation.save();
+    }
     const newNotification = new NotificationModel({receiver: postInDb.seller._id, description: `${user.fullname} had made a deposit for ${postInDb.title}`});
     await newNotification.save();
     const newDeposit = new DepositModel({user: user._id, target: postId, totalDeposit, orderId});

@@ -12,6 +12,7 @@ import {
 import {
   BookmarkIcon as OutLineBookmark,
   ReceiptRefundIcon,
+  ChatIcon
 } from "@heroicons/react/outline";
 
 function Header(props) {
@@ -145,6 +146,12 @@ function Header(props) {
                     <span>Deposity History</span>
                   </Link>
                 )}
+                <Link
+                    to="/message"
+                    className="flex gap-1 px-1 py-2  rounded-md cursor-pointer"
+                  >
+                    <ChatIcon className="w-10 h-6 px-0 py-0 m-0 text-gray-500" />
+                  </Link>
                 <button
                   type="button"
                   className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
