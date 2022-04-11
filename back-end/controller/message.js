@@ -12,11 +12,11 @@ messageRoute.use([passport.authenticate('jwt', {session: false}), authorize([pro
 messageRoute.get('/', async (req, res) => {
     const user = req.user;
     if(user.role === process.env.USER) {
-        const data = await ConservationModel.find({user: user._id}).sort({updatedAt: 1}).populate('user').populate('seller').populate({path: 'messages', populate: {path: 'sender'}});
+        const data = await ConservationModel.find({user: user._id}).sort({updatedAt: -1}).populate('user').populate('seller').populate({path: 'messages', populate: {path: 'sender'}});
         res.status(200).json(data);
     }
     else {
-        const data = await ConservationModel.find({seller: user._id}).sort({updatedAt: 1}).populate('user').populate('seller').populate({path: 'messages', populate: {path: 'sender'}});
+        const data = await ConservationModel.find({seller: user._id}).sort({updatedAt: -1}).populate('user').populate('seller').populate({path: 'messages', populate: {path: 'sender'}});
         res.status(200).json(data);
     }
 })

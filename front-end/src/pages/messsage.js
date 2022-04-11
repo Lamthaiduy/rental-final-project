@@ -6,9 +6,17 @@ import avatar from '../assets/avatar.png'
 import {io} from 'socket.io-client'
 const MessagePage = ({ authReducer }) => {
   const [conversations, setConversations] = useState([]);
-  const [activeConservation, setActiveConservation] = useState({});
+  const [activeConservation, setActiveConservation] = useState({
+      sender: {},
+      user: {},
+      messages: [],
+      _id: ""
+  });
+  const [text, setText] = useState("");
   const { token, user } = authReducer;
-const socket = useRef();
+  const scrollRef = useRef();
+
+const socket = io('ws://localhost:5000');
 
   const loadConversations = useCallback(async () => {
     const { data } = await getConversations(token);
@@ -22,14 +30,36 @@ const socket = useRef();
   }
   
   useEffect(() => {
-      socket.current = io('http://localhost:8080', {
-        reconnectionDelay: 1000,
-      })
-  },[])
+      socket.emit('addUser', user?._id);
+  },[activeConservation])
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [activeConservation.messages]);
+
+  socket.on('getMessage', data => {
+    console.log(data);
+    setActiveConservation({...activeConservation, ...data})
+})
+
+  const handleSubmitMessage = (e) => {
+      e.preventDefault();
+      const objectEmit = {
+        senderId: user?._id,
+          receiverId: user?.role === roles.SELLER ? activeConservation?.user?._id : activeConservation?.seller?._id,
+          conversationId: activeConservation?._id,
+          text: text
+      }
+      socket.emit('sendMessage', objectEmit);
+      setText("")
+  }
 
   useEffect(() => {
     loadConversations();
   }, [loadConversations]);
+  const dateConverter = (date) => {
+    const dateToConvert = new Date(date);
+    return `${dateToConvert.getHours()}:${dateToConvert.getMinutes()}, ${dateToConvert.getDay()}/${dateToConvert.getMonth() + 1}/${dateToConvert.getFullYear()}`
+  }
   return (
     <div className="w-full min-h-screen h-full flex">
       <div className="w-1/5 border overflow-y-auto">
@@ -39,8 +69,8 @@ const socket = useRef();
                     <div className="w-20 h-20 rounded-full">
                         <img className="w-20 h-20 rounded-full" src={item?.user?.avatar || avatar} alt="avatar" />
                     </div>
-                    <div className="">
-                        <span className="text-2xl font-medium text-gray-700">{item?.user?.fullname}</span>
+                    <div className="flex flex-col">
+                        <span className="text-xl font-medium text-gray-700">{item?.user?.fullname}</span>
                         <span>{item?.messages[item?.messages?.length-1]?.message}</span>
                     </div>
                 </div>
@@ -88,12 +118,15 @@ const socket = useRef();
             className="flex flex-col space-y-4 p-3 overflow-y-auto scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch"
           >
             {activeConservation?.messages?.map((item, index) => 
-                item?.sender?._id !== user._id ? <div className="chat-message">
+                item?.sender?._id !== user._id ? <div key={index}  className="chat-message">
                 <div className="flex items-end">
                   <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-2 items-start">
-                    <div>
-                      <span className="px-4 py-2 rounded-lg inline-block rounded-bl-none bg-gray-300 text-gray-600">
+                  <div className="flex flex-col px-4 py-2 rounded-lg rounded-br-none bg-gray-300 text-gray-600">
+                      <span ref={scrollRef} className="text-lg">
                         {item.message}
+                      </span>
+                      <span className="text-xs text-gray-600">
+                        {dateConverter(item.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -103,12 +136,15 @@ const socket = useRef();
                     className="w-6 h-6 rounded-full order-1"
                   />
                 </div>
-              </div> : <div className="chat-message">
+              </div> : <div key={index}  className="chat-message">
                 <div className="flex items-end justify-end">
                   <div className="flex flex-col space-y-2 text-xs max-w-xs mx-2 order-1 items-end">
-                    <div>
-                      <span className="px-4 py-2 rounded-lg inline-block rounded-br-none bg-blue-600 text-white ">
+                    <div className="flex flex-col px-4 py-2 rounded-lg rounded-br-none bg-blue-600 text-white ">
+                      <span ref={scrollRef} className="text-lg" >
                         {item.message}
+                      </span>
+                      <span className="text-xs">
+                        {dateConverter(item.createdAt)}
                       </span>
                     </div>
                   </div>
@@ -123,99 +159,19 @@ const socket = useRef();
           </div>
           <div className="border-t-2 border-gray-200 px-4 pt-4 mb-2 sm:mb-0">
             <div className="relative flex">
-              <span className="absolute inset-y-0 flex items-center">
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full h-12 w-12 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-gray-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
-                    ></path>
-                  </svg>
-                </button>
-              </span>
               <input
                 type="text"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
                 placeholder="Write your message!"
                 className="w-full focus:outline-none focus:placeholder-gray-400 text-gray-600 placeholder-gray-600 pl-12 bg-gray-200 rounded-md py-3"
               />
               <div className="absolute right-0 items-center inset-y-0 hidden sm:flex">
                 <button
+                onClick={handleSubmitMessage}
                   type="button"
-                  className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-gray-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                    ></path>
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-gray-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    ></path>
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    ></path>
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-full h-10 w-10 transition duration-500 ease-in-out text-gray-500 hover:bg-gray-300 focus:outline-none"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    className="h-6 w-6 text-gray-600"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
+                  className="disabled:cursor-not-allowed disabled:bg-gray-500 inline-flex items-center justify-center rounded-lg px-4 py-3 transition duration-500 ease-in-out text-white bg-blue-500 hover:bg-blue-400 focus:outline-none"
+                    disabled={text?.length === 0}
                 >
                   <span className="font-bold">Send</span>
                   <svg
