@@ -57,10 +57,8 @@ io.on('connection', (socket) => {
         await message.save();
         conversation.messages.push(message);
         await conversation.save();
-        console.log(receiver.socketId);
-        console.log(sender.socketId);
         const responseMessage = await ConversationModel.findById(conversationId).populate('user').populate('seller').populate({path: 'messages', populate: {path: 'sender'}});;
-        io.to([receiver.socketId, sender.socketId]).emit("getMessage", responseMessage);
+        io.to([receiver?.socketId, sender?.socketId]).emit("getMessage", responseMessage);
       });
 
     socket.on("disconnect", () => {

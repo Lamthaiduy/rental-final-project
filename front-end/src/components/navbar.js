@@ -31,7 +31,10 @@ function Header(props) {
   };
 
   const loadNotification = useCallback(async () => {
-    const { data } = await getUserNotifications(authReducer.token);
+    const { data, status } = await getUserNotifications(authReducer.token);
+    if(status === 401) {
+      logout()
+    }
     setNotifications(data.data);
   }, [authReducer.token]);
 
@@ -95,7 +98,7 @@ function Header(props) {
                           toggleNoti ? "block" : "hidden"
                         } z-10 w-56 max-h-56 overflow-y-auto bg-white border absolute right-[50%] translate-x-[50%]`}
                       >
-                        {notifications.map((item) => (
+                        {notifications?.map((item) => (
                           <div
                             key={item._id}
                             className={`w-full flex pr-3 ${

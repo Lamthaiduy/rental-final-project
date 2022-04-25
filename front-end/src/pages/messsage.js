@@ -34,7 +34,7 @@ const socket = io('ws://localhost:5000');
   },[activeConservation])
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeConservation.messages]);
+  }, [activeConservation]);
 
   socket.on('getMessage', data => {
     console.log(data);
@@ -90,7 +90,7 @@ const socket = io('ws://localhost:5000');
           </>}
       </div>
       <div className="w-full border">
-        <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
+        {activeConservation && <div className="flex-1 p:2 sm:p-6 justify-between flex flex-col h-screen">
           <div className="flex sm:items-center justify-between py-3 border-b-2 border-gray-200">
             <div className="relative flex items-center space-x-4">
               <div className="relative">
@@ -186,7 +186,7 @@ const socket = io('ws://localhost:5000');
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </div>
   );

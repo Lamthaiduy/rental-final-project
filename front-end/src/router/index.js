@@ -107,15 +107,15 @@ function ApplicationRouter({authReducer}) {
             }
           />
         </>}
-        {user.role === roles.USER && <>
-          <Route
+        <Route
           path="/home"
           element={
             <AuthRouter>
-              <Home />
+              {user.role === roles.USER ? <Home /> : user.role === roles.SELLER ? <OwnerList /> : null}
             </AuthRouter>
           }
         />
+        {user.role === roles.USER && <>
           <Route
           path="/deposit/:postId"
           element={
@@ -171,14 +171,6 @@ function ApplicationRouter({authReducer}) {
           element={
             <AuthRouter>
               <CreatePost />
-            </AuthRouter>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <AuthRouter>
-              <OwnerList />
             </AuthRouter>
           }
         />
